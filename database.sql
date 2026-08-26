@@ -1,6 +1,4 @@
--- =============================================
--- 1. TẠO CƠ SỞ DỮ LIỆU: ShoppingServiceMVC
--- =============================================
+
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'ShoppingServiceMVC')
 BEGIN
     CREATE DATABASE ShoppingServiceMVC;
@@ -10,10 +8,7 @@ GO
 USE ShoppingServiceMVC;
 GO
 
--- =============================================
--- 2. TẠO BẢNG [User]
--- Role ID: 1: Admin, 2: Manager, 3: User (Member)
--- =============================================
+
 IF OBJECT_ID('dbo.[User]', 'U') IS NOT NULL
     DROP TABLE dbo.[User];
 GO
@@ -31,9 +26,7 @@ CREATE TABLE [dbo].[User] (
 );
 GO
 
--- =============================================
--- 3. TẠO BẢNG [Category]
--- =============================================
+
 IF OBJECT_ID('dbo.[Category]', 'U') IS NOT NULL
     DROP TABLE dbo.[Category];
 GO
@@ -45,10 +38,7 @@ CREATE TABLE [dbo].[Category] (
 );
 GO
 
--- =============================================
--- 4. CHÈN DỮ LIỆU MẪU CHO BẢNG [User]
--- Mật khẩu mặc định: 123
--- =============================================
+
 INSERT INTO [dbo].[User] ([email], [username], [fullname], [password], [avatar], [roleid], [phone], [createdDate])
 VALUES 
 ('huybach219@gmail.com', 'admin', N'Lâm Huy Bách', '123', 'avt.png', 1, '0838020019', GETDATE()),
@@ -56,9 +46,7 @@ VALUES
 ('banhthic@gmail.com', 'user', N'Bành Thị C', '123', NULL, 3, '0907654321', GETDATE());
 GO
 
--- =============================================
--- 5. CHÈN DỮ LIỆU MẪU CHO BẢNG [Category]
--- =============================================
+
 INSERT INTO [dbo].[Category] ([cate_name], [icons]) 
 VALUES 
 (N'Áo Thun Nam', 'men.jpg'),
@@ -67,9 +55,7 @@ VALUES
 (N'Laptop & Thiết Bị Số', 'laptop.jpg');
 GO
 
--- =============================================
--- 6. KIỂM TRA LẠI DỮ LIỆU VỪA TẠO
--- =============================================
+
 SELECT * FROM [dbo].[User];
 SELECT * FROM [dbo].[Category];
 GO
