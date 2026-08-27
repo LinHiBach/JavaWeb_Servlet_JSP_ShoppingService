@@ -1,115 +1,159 @@
 package vn.hcmute.dao.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-import vn.hcmute.connection.DBConnection;
+import java.util.List;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TypedQuery;
+import vn.hcmute.config.JpaConfig;
 import vn.hcmute.dao.IUserDao;
+import vn.hcmute.entity.User;
 import vn.hcmute.models.UserModel;
 
 public class UserDaoImpl implements IUserDao {
 
     @Override
-    public UserModel get(String username) {
-        String sql = "SELECT id, email, username, fullname, password, avatar, roleid, phone, createdDate FROM [User] WHERE username = ?";
-        try (Connection conn = new DBConnection().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
-            ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    UserModel user = new UserModel();
-                    user.setId(rs.getInt("id"));
-                    user.setEmail(rs.getString("email"));
-                    user.setUsername(rs.getString("username"));
-                    user.setFullname(rs.getString("fullname"));
-                    user.setPassword(rs.getString("password"));
-                    user.setAvatar(rs.getString("avatar"));
-                    user.setRoleid(rs.getInt("roleid"));
-                    user.setPhone(rs.getString("phone"));
-                    user.setCreatedDate(rs.getDate("createdDate"));
-                    return user;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    public User findById(int id) {
+        EntityManager enma = JpaConfig.getEntityManager();
+        try {
+            return enma.find(User.class, id);
+        } finally {
+            enma.close();
         }
-        return null;
     }
 
     @Override
-    public void insert(UserModel user) {
-        String sql = "INSERT INTO [User] (email, username, fullname, password, avatar, roleid, phone, createdDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = new DBConnection().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
-            ps.setString(1, user.getEmail());
-            ps.setString(2, user.getUsername());
-            ps.setString(3, user.getFullname());
-            ps.setString(4, user.getPassword());
-            ps.setString(5, user.getAvatar());
-            ps.setInt(6, user.getRoleid());
-            ps.setString(7, user.getPhone());
-            ps.setDate(8, user.getCreatedDate());
-            
-            ps.executeUpdate();
+    public User findByUsername(String username) {
+        EntityManager enma = JpaConfig.getEntityManager();
+        try {
+            String jpql = "SELECT u FROM User u WHERE u.username = :username";
+            TypedQuery<User> query = enma.createQuery(jpql, User.class);
+            query.setParameter("username", username);
+            List<User> list = query.getResultList();
+            return list.isEmpty() ? null : list.get(0);
+        } finally {
+            enma.close();
+        }
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        EntityManager enma = JpaConfig.getEntityManager();
+        try {
+            String jpql = "SELECT u FROM User u WHERE u.email = :email";
+            TypedQuery<User> query = enma.createQuery(jpql, User.class);
+            query.setParameter("email", email);
+            List<User> list = query.getResultList();
+            return list.isEmpty() ? null : list.get(0);
+        } finally {
+            enma.close();
+        }
+    }
+
+    @Override
+    public List<User> findAll() {
+        EntityManager enma = JpaConfig.getEntityManager();
+        try {
+            TypedQuery<User> query = enma.createNamedQuery("User.findAll", User.class);
+            return query.getResultList();
+        } finally {
+            enma.close();
+        }
+    }
+
+    @Override
+    public void insert(User user) {
+        EntityManager enma = JpaConfig.getEntityManager();
+        EntityTransaction trans = enma.getTransaction();
+        try {
+            trans.begin();
+            enma.persist(user);
+            trans.commit();
         } catch (Exception e) {
+            if (trans.isActive()) {
+                trans.rollback();
+            }
             e.printStackTrace();
+            throw e;
+        } finally {
+            enma.close();
+        }
+    }
+
+    @Override
+    public void update(User user) {
+        EntityManager enma = JpaConfig.getEntityManager();
+        EntityTransaction trans = enma.getTransaction();
+        try {
+            trans.begin();
+            enma.merge(user);
+            trans.commit();
+        } catch (Exception e) {
+            if (trans.isActive()) {
+                trans.rollback();
+            }
+            e.printStackTrace();
+            throw e;
+        } finally {
+            enma.close();
+        }
+    }
+
+    @Override
+    public void delete(int id) {
+        EntityManager enma = JpaConfig.getEntityManager();
+        EntityTransaction trans = enma.getTransaction();
+        try {
+            trans.begin();
+            User user = enma.find(User.class, id);
+            if (user != null) {
+                enma.remove(user);
+            }
+            trans.commit();
+        } catch (Exception e) {
+            if (trans.isActive()) {
+                trans.rollback();
+            }
+            e.printStackTrace();
+            throw e;
+        } finally {
+            enma.close();
         }
     }
 
     @Override
     public boolean checkExistEmail(String email) {
-        String sql = "SELECT 1 FROM [User] WHERE email = ?";
-        try (Connection conn = new DBConnection().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
-            ps.setString(1, email);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+        return findByEmail(email) != null;
     }
 
     @Override
     public boolean checkExistUsername(String username) {
-        String sql = "SELECT 1 FROM [User] WHERE username = ?";
-        try (Connection conn = new DBConnection().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
-            ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+        return findByUsername(username) != null;
     }
 
     @Override
     public boolean checkExistPhone(String phone) {
-        String sql = "SELECT 1 FROM [User] WHERE phone = ?";
-        try (Connection conn = new DBConnection().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            
-            ps.setString(1, phone);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        EntityManager enma = JpaConfig.getEntityManager();
+        try {
+            String jpql = "SELECT u FROM User u WHERE u.phone = :phone";
+            TypedQuery<User> query = enma.createQuery(jpql, User.class);
+            query.setParameter("phone", phone);
+            List<User> list = query.getResultList();
+            return !list.isEmpty();
+        } finally {
+            enma.close();
         }
-        return false;
+    }
+
+    @Override
+    public UserModel get(String username) {
+        User user = findByUsername(username);
+        if (user == null) return null;
+        if (user instanceof UserModel) return (UserModel) user;
+        return new UserModel(user);
+    }
+
+    @Override
+    public void insert(UserModel user) {
+        insert((User) user);
     }
 }

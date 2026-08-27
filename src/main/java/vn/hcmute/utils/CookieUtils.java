@@ -4,7 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import vn.hcmute.models.UserModel;
+import vn.hcmute.entity.User;
 import vn.hcmute.services.IUserService;
 
 public class CookieUtils {
@@ -48,15 +48,15 @@ public class CookieUtils {
     /**
      * Tự động khôi phục Session từ Remember Me Cookie nếu Session chưa có
      */
-    public static UserModel checkAndRestoreSession(HttpServletRequest req, IUserService service) {
+    public static User checkAndRestoreSession(HttpServletRequest req, IUserService service) {
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("account") != null) {
-            return (UserModel) session.getAttribute("account");
+            return (User) session.getAttribute("account");
         }
 
         String rememberedUsername = get(req, Constant.COOKIE_REMEMBER);
         if (rememberedUsername != null && !rememberedUsername.trim().isEmpty()) {
-            UserModel user = service.get(rememberedUsername.trim());
+            User user = service.get(rememberedUsername.trim());
             if (user != null) {
                 session = req.getSession(true);
                 session.setAttribute("account", user);

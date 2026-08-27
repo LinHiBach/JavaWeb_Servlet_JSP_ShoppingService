@@ -1,9 +1,10 @@
 package vn.hcmute.services.impl;
 
 import java.sql.Date;
-
+import java.util.List;
 import vn.hcmute.dao.IUserDao;
 import vn.hcmute.dao.impl.UserDaoImpl;
+import vn.hcmute.entity.User;
 import vn.hcmute.models.UserModel;
 import vn.hcmute.services.IUserService;
 
@@ -11,8 +12,8 @@ public class UserServiceImpl implements IUserService {
     private final IUserDao userDao = new UserDaoImpl();
 
     @Override
-    public UserModel login(String username, String password) {
-        UserModel user = this.get(username);
+    public User login(String username, String password) {
+        User user = this.get(username);
         if (user != null && password != null && password.equals(user.getPassword())) {
             return user;
         }
@@ -20,8 +21,28 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserModel get(String username) {
-        return userDao.get(username);
+    public User get(String username) {
+        return userDao.findByUsername(username);
+    }
+
+    @Override
+    public User findById(int id) {
+        return userDao.findById(id);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return userDao.findByUsername(username);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userDao.findByEmail(email);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userDao.findAll();
     }
 
     @Override
@@ -31,9 +52,9 @@ public class UserServiceImpl implements IUserService {
         }
         long millis = System.currentTimeMillis();
         Date date = new Date(millis);
-        
+
         // Mặc định roleid = 3 (Member/User)
-        UserModel newUser = new UserModel(email, username, fullname, password, null, 3, phone, date);
+        User newUser = new User(email, username, fullname, password, null, 3, phone, date);
         userDao.insert(newUser);
         return true;
     }
@@ -54,7 +75,17 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void insert(UserModel user) {
+    public void insert(User user) {
         userDao.insert(user);
+    }
+
+    @Override
+    public void update(User user) {
+        userDao.update(user);
+    }
+
+    @Override
+    public void insert(UserModel user) {
+        userDao.insert((User) user);
     }
 }

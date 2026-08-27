@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import vn.hcmute.models.UserModel;
+import vn.hcmute.entity.User;
 import vn.hcmute.services.IUserService;
 import vn.hcmute.services.impl.UserServiceImpl;
 import vn.hcmute.utils.Constant;
@@ -63,7 +63,7 @@ public class LoginController extends HttpServlet {
             return;
         }
 
-        UserModel user = service.login(username.trim(), password);
+        User user = service.login(username.trim(), password);
         if (user != null) {
             // Lưu thông tin người dùng vào Session
             HttpSession session = req.getSession(true);

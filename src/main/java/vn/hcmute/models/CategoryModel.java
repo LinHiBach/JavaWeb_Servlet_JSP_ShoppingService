@@ -1,31 +1,34 @@
 package vn.hcmute.models;
 
-import java.io.Serializable;
+import vn.hcmute.entity.Category;
 
-public class CategoryModel implements Serializable {
+public class CategoryModel extends Category {
     private static final long serialVersionUID = 1L;
 
-    private int id;
-    private String name;
-    private String icon;
-
-    public CategoryModel() {}
+    public CategoryModel() {
+        super();
+    }
 
     public CategoryModel(int id, String name, String icon) {
-        this.id = id;
-        this.name = name;
-        this.icon = icon;
+        super(name, icon);
+        this.setId(id);
     }
 
     public CategoryModel(String name, String icon) {
-        this.name = name;
-        this.icon = icon;
+        super(name, icon);
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getIcon() { return icon; }
-    public void setIcon(String icon) { this.icon = icon; }
+    public CategoryModel(int id, String name, String icon, int status) {
+        super(id, name, icon, status);
+    }
+
+    public CategoryModel(Category cate) {
+        if (cate != null) {
+            this.setId(cate.getCategoryId());
+            this.setName(cate.getCategoryname());
+            this.setIcon(cate.getImages());
+            this.setStatus(cate.getStatus());
+            this.setVideos(cate.getVideos());
+        }
+    }
 }

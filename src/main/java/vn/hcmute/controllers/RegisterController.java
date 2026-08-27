@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import vn.hcmute.models.UserModel;
+import vn.hcmute.entity.User;
 import vn.hcmute.services.IUserService;
 import vn.hcmute.services.impl.UserServiceImpl;
 import vn.hcmute.utils.Constant;
@@ -20,8 +20,7 @@ public class RegisterController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Tự động chuyển hướng nếu đã đăng nhập hoặc có Cookie Remember Me (Slide 2 Trang 30-31)
-        UserModel user = CookieUtils.checkAndRestoreSession(req, service);
+        User user = CookieUtils.checkAndRestoreSession(req, service);
         if (user != null) {
             resp.sendRedirect(req.getContextPath() + "/waiting");
             return;

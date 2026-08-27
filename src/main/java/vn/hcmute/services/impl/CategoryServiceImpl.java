@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.List;
 import vn.hcmute.dao.ICategoryDao;
 import vn.hcmute.dao.impl.CategoryDaoImpl;
-import vn.hcmute.models.CategoryModel;
+import vn.hcmute.entity.Category;
 import vn.hcmute.services.ICategoryService;
 import vn.hcmute.utils.Constant;
 
@@ -12,48 +12,92 @@ public class CategoryServiceImpl implements ICategoryService {
     private final ICategoryDao categoryDao = new CategoryDaoImpl();
 
     @Override
-    public void insert(CategoryModel category) {
+    public void insert(Category category) {
         categoryDao.insert(category);
     }
 
     @Override
-    public void edit(CategoryModel newCategory) {
-        CategoryModel oldCategory = categoryDao.get(newCategory.getId());
-        oldCategory.setName(newCategory.getName());
-        if (newCategory.getIcon() != null) {
-            // Xóa ảnh cũ nếu người dùng cập nhật ảnh mới
-            String fileName = oldCategory.getIcon();
-            if (fileName != null) {
-                File file = new File(Constant.DIR + File.separator + fileName);
-                if (file.exists()) file.delete();
+    public void update(Category newCategory) {
+        Category oldCategory = categoryDao.findById(newCategory.getCategoryId());
+        if (oldCategory != null) {
+            oldCategory.setCategoryname(newCategory.getCategoryname());
+            oldCategory.setStatus(newCategory.getStatus());
+            if (newCategory.getImages() != null && !newCategory.getImages().isEmpty()) {
+                // Xóa ảnh cũ nếu người dùng cập nhật ảnh mới
+                String oldFileName = oldCategory.getImages();
+                if (oldFileName != null && !oldFileName.isEmpty()) {
+                    File file = new File(Constant.DIR + File.separator + oldFileName);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
+                oldCategory.setImages(newCategory.getImages());
             }
-            oldCategory.setIcon(newCategory.getIcon());
+            categoryDao.update(oldCategory);
+        } else {
+            categoryDao.update(newCategory);
         }
-        categoryDao.edit(oldCategory);
+    }
+
+    @Override
+    public void edit(Category category) {
+        update(category);
     }
 
     @Override
     public void delete(int id) {
-        CategoryModel oldCategory = categoryDao.get(id);
-        if (oldCategory != null && oldCategory.getIcon() != null) {
-            File file = new File(Constant.DIR + File.separator + oldCategory.getIcon());
-            if (file.exists()) file.delete();
+        Category oldCategory = categoryDao.findById(id);
+        if (oldCategory != null && oldCategory.getImages() != null) {
+            File file = new File(Constant.DIR + File.separator + oldCategory.getImages());
+            if (file.exists()) {
+                file.delete();
+            }
         }
         categoryDao.delete(id);
     }
 
     @Override
-    public CategoryModel get(int id) {
-        return categoryDao.get(id);
+    public Category get(int id) {
+        return categoryDao.findById(id);
     }
 
     @Override
-    public List<CategoryModel> getAll() {
-        return categoryDao.getAll();
+    public Category findById(int id) {
+        return categoryDao.findById(id);
     }
 
     @Override
-    public List<CategoryModel> search(String keyword) {
-        return categoryDao.search(keyword);
+    public Category findByCategoryname(String name) {
+        return categoryDao.findByCategoryname(name);
+    }
+
+    @Override
+    public List<Category> getAll() {
+        return categoryDao.findAll();
+    }
+
+    @Override
+    public List<Category> findAll() {
+        return categoryDao.findAll();
+    }
+
+    @Override
+    public List<Category> search(String keyword) {
+        return categoryDao.searchByName(keyword);
+    }
+
+    @Override
+    public List<Category> searchByName(String keyword) {
+        return categoryDao.searchByName(keyword);
+    }
+
+    @Override
+    public List<Category> findAll(int page, int pagesize) {
+        return categoryDao.findAll(page, pagesize);
+    }
+
+    @Override
+    public int count() {
+        return categoryDao.count();
     }
 }

@@ -1,13 +1,20 @@
 package vn.hcmute.services;
 
 import java.util.List;
-import vn.hcmute.models.CategoryModel;
+import vn.hcmute.entity.Category;
 
 public interface ICategoryService {
-    void insert(CategoryModel category);
-    void edit(CategoryModel category);
+    void insert(Category category);
+    void update(Category category);
+    void edit(Category category);
     void delete(int id);
-    CategoryModel get(int id);
-    List<CategoryModel> getAll();
-    List<CategoryModel> search(String keyword);
+    Category get(int id);
+    Category findById(int id);
+    Category findByCategoryname(String name);
+    List<Category> getAll();
+    List<Category> findAll();
+    List<Category> search(String keyword);
+    List<Category> searchByName(String keyword);
+    List<Category> findAll(int page, int pagesize);
+    int count();
 }
