@@ -135,11 +135,11 @@
                             <c:when test="${not empty sessionScope.account.avatar}">
                                 <c:choose>
                                     <c:when test="${sessionScope.account.avatar.startsWith('http')}">
-                                        <img src="${sessionScope.account.avatar}" class="rounded-circle border" width="80" height="80" alt="Avatar">
+                                        <img src="${sessionScope.account.avatar}" class="rounded-circle border" width="80" height="80" alt="Avatar" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${sessionScope.account.fullname}&amp;background=3b82f6&amp;color=ffffff&amp;bold=true';">
                                     </c:when>
                                     <c:otherwise>
                                         <c:url value="/image?fname=${sessionScope.account.avatar}" var="avtUrl"/>
-                                        <img src="${avtUrl}" class="rounded-circle border" width="80" height="80" alt="Avatar">
+                                        <img src="${avtUrl}" class="rounded-circle border" width="80" height="80" alt="Avatar" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${sessionScope.account.fullname}&amp;background=3b82f6&amp;color=ffffff&amp;bold=true';">
                                     </c:otherwise>
                                 </c:choose>
                             </c:when>
