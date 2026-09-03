@@ -12,8 +12,6 @@
         <class>vn.hcmute.entity.User</class>
         <class>vn.hcmute.entity.Category</class>
         <class>vn.hcmute.entity.Video</class>
-        <class>vn.hcmute.models.UserModel</class>
-        <class>vn.hcmute.models.CategoryModel</class>
 
         <properties>
             <!-- JDBC Connection Settings -->

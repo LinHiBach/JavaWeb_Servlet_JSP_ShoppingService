@@ -13,7 +13,7 @@ import vn.hcmute.services.impl.UserServiceImpl;
 import vn.hcmute.utils.Constant;
 import vn.hcmute.utils.CookieUtils;
 
-@WebServlet(urlPatterns = "/admin/home")
+@WebServlet(urlPatterns = {"/admin", "/admin/home"})
 public class AdminHomeController extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private final IUserService userService = new UserServiceImpl();

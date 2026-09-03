@@ -9,7 +9,13 @@ public class JpaConfig {
 
     public static synchronized EntityManagerFactory getEntityManagerFactory() {
         if (factory == null || !factory.isOpen()) {
-            factory = Persistence.createEntityManagerFactory("dataSource");
+            try {
+                factory = Persistence.createEntityManagerFactory("dataSource");
+            } catch (Exception e) {
+                System.err.println("❌ LỖI KHỞI TẠO ENTITY MANAGER FACTORY: " + e.getMessage());
+                e.printStackTrace();
+                throw e;
+            }
         }
         return factory;
     }
@@ -21,6 +27,7 @@ public class JpaConfig {
     public static synchronized void close() {
         if (factory != null && factory.isOpen()) {
             factory.close();
+            factory = null;
         }
     }
 }

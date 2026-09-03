@@ -1,5 +1,0 @@
-package vn.hcmute.controllers;
-
-public class DownloadImageController extends ImageServlet {
-    private static final long serialVersionUID = 1L;
-}

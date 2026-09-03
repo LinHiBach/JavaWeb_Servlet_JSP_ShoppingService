@@ -69,7 +69,7 @@ public class UserDaoImpl implements IUserDao {
             enma.persist(user);
             trans.commit();
         } catch (Exception e) {
-            if (trans.isActive()) {
+            if (trans != null && trans.isActive()) {
                 trans.rollback();
             }
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class UserDaoImpl implements IUserDao {
             enma.merge(user);
             trans.commit();
         } catch (Exception e) {
-            if (trans.isActive()) {
+            if (trans != null && trans.isActive()) {
                 trans.rollback();
             }
             e.printStackTrace();
@@ -110,7 +110,7 @@ public class UserDaoImpl implements IUserDao {
             }
             trans.commit();
         } catch (Exception e) {
-            if (trans.isActive()) {
+            if (trans != null && trans.isActive()) {
                 trans.rollback();
             }
             e.printStackTrace();

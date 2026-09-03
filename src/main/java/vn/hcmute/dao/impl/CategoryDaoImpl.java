@@ -19,7 +19,7 @@ public class CategoryDaoImpl implements ICategoryDao {
             enma.persist(cate);
             trans.commit();
         } catch (Exception e) {
-            if (trans.isActive()) {
+            if (trans != null && trans.isActive()) {
                 trans.rollback();
             }
             e.printStackTrace();
@@ -38,7 +38,7 @@ public class CategoryDaoImpl implements ICategoryDao {
             enma.merge(cate);
             trans.commit();
         } catch (Exception e) {
-            if (trans.isActive()) {
+            if (trans != null && trans.isActive()) {
                 trans.rollback();
             }
             e.printStackTrace();
@@ -60,7 +60,7 @@ public class CategoryDaoImpl implements ICategoryDao {
             }
             trans.commit();
         } catch (Exception e) {
-            if (trans.isActive()) {
+            if (trans != null && trans.isActive()) {
                 trans.rollback();
             }
             e.printStackTrace();
@@ -144,7 +144,6 @@ public class CategoryDaoImpl implements ICategoryDao {
         }
     }
 
-    // Aliases
     @Override
     public void edit(Category category) {
         update(category);

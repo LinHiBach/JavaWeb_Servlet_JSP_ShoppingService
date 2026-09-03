@@ -72,6 +72,12 @@
             <artifactId>expressly</artifactId>
             <version>5.0.0</version>
         </dependency>
+        <!-- SiteMesh -->
+        <dependency>
+            <groupId>org.sitemesh</groupId>
+            <artifactId>sitemesh</artifactId>
+            <version>3.0.1</version>
+        </dependency>
     </dependencies>
 
     <build>

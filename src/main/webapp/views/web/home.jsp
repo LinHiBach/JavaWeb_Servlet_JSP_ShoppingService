@@ -197,9 +197,14 @@
                         </div>
                     </div>
 
-                    <a href="${pageContext.request.contextPath}/logout" class="btn-topbar-logout w-100 justify-content-center py-2 fs-6">
-                        <i class="bi bi-box-arrow-right"></i> Đăng xuất khỏi tài khoản
-                    </a>
+                    <div class="d-flex gap-2">
+                        <a href="${pageContext.request.contextPath}/profile" class="btn btn-primary w-100 justify-content-center py-2 fs-6 fw-bold">
+                            <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa Profile (JPA)
+                        </a>
+                        <a href="${pageContext.request.contextPath}/logout" class="btn-topbar-logout w-100 justify-content-center py-2 fs-6">
+                            <i class="bi bi-box-arrow-right"></i> Đăng xuất
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
