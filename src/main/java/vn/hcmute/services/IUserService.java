@@ -2,7 +2,6 @@ package vn.hcmute.services;
 
 import java.util.List;
 import vn.hcmute.entity.User;
-import vn.hcmute.models.UserModel;
 
 public interface IUserService {
     User login(String username, String password);
@@ -19,6 +18,4 @@ public interface IUserService {
     boolean checkExistEmail(String email);
     boolean checkExistUsername(String username);
     boolean checkExistPhone(String phone);
-
-    void insert(UserModel user);
 }

@@ -87,9 +87,9 @@
         </div>
     </nav>
 
-    <!-- MAIN BODY CONTENT -->
+    <!-- MAIN BODY CONTENT INJECTED BY SITEMESH 3 -->
     <div class="flex-grow-1">
-        <c:out value="${requestScope.body}" escapeXml="false"/>
+        <sitemesh:write property="body"/>
     </div>
 
     <!-- FOOTER -->

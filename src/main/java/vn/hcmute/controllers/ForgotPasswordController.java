@@ -20,6 +20,8 @@ public class ForgotPasswordController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
         req.getRequestDispatcher("/views/forgot-password.jsp").forward(req, resp);
     }
 
@@ -28,17 +30,24 @@ public class ForgotPasswordController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
 
-        String email = req.getParameter("email");
-        if (email == null || email.trim().isEmpty()) {
-            req.setAttribute("alert", "Vui lòng nhập email đăng ký!");
+        String input = req.getParameter("email");
+        req.setAttribute("email", input != null ? input.trim() : "");
+
+        if (input == null || input.trim().isEmpty()) {
+            req.setAttribute("alert", "Vui lòng nhập Email hoặc Tên tài khoản (Username)!");
             req.getRequestDispatcher("/views/forgot-password.jsp").forward(req, resp);
             return;
         }
 
-        User user = userService.findByEmail(email.trim());
+        // Tìm theo Email trước, nếu không có thì tìm theo Username
+        User user = userService.findByEmail(input.trim());
         if (user == null) {
-            req.setAttribute("alert", "Email này chưa được đăng ký trong hệ thống!");
-            req.setAttribute("email", email);
+            user = userService.findByUsername(input.trim());
+        }
+
+        if (user == null) {
+            req.setAttribute("alert", "Không tìm thấy tài khoản hoặc email này trong hệ thống!");
+            req.setAttribute("email", input);
             req.getRequestDispatcher("/views/forgot-password.jsp").forward(req, resp);
             return;
         }
@@ -48,11 +57,12 @@ public class ForgotPasswordController extends HttpServlet {
         user.setCode(otp);
         userService.update(user);
 
-        // Gửi email OTP
+        // Gửi email OTP (chạy ngầm, in console rõ ràng)
         EmailUtils.sendOtpEmail(user.getEmail(), otp, "reset");
 
         HttpSession session = req.getSession(true);
         session.setAttribute("resetEmail", user.getEmail());
+        session.setAttribute("latestOtp", otp); // Hỗ trợ hiển thị thử nghiệm
 
         resp.sendRedirect(req.getContextPath() + "/reset-password");
     }

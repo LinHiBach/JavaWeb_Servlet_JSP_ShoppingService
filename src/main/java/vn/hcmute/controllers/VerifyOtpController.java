@@ -20,6 +20,9 @@ public class VerifyOtpController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
         HttpSession session = req.getSession(false);
         String email = (session != null) ? (String) session.getAttribute("pendingEmail") : null;
 
@@ -58,7 +61,9 @@ public class VerifyOtpController extends HttpServlet {
                 user.setCode(newOtp);
                 userService.update(user);
                 EmailUtils.sendOtpEmail(user.getEmail(), newOtp, "register");
-                req.setAttribute("successAlert", "Mã OTP mới đã được gửi lại vào email của bạn!");
+                HttpSession session = req.getSession(true);
+                session.setAttribute("latestOtp", newOtp);
+                req.setAttribute("successAlert", "Mã OTP mới đã được tạo và gửi lại vào email của bạn!");
             }
             req.setAttribute("email", email);
             req.getRequestDispatcher("/views/verify-otp.jsp").forward(req, resp);
@@ -67,6 +72,13 @@ public class VerifyOtpController extends HttpServlet {
 
         if (otp == null || otp.trim().isEmpty()) {
             req.setAttribute("alert", "Vui lòng nhập mã OTP xác thực!");
+            req.setAttribute("email", email);
+            req.getRequestDispatcher("/views/verify-otp.jsp").forward(req, resp);
+            return;
+        }
+
+        if (!otp.trim().matches("^[0-9]{6}$")) {
+            req.setAttribute("alert", "Mã OTP phải gồm đúng 6 chữ số!");
             req.setAttribute("email", email);
             req.getRequestDispatcher("/views/verify-otp.jsp").forward(req, resp);
             return;
@@ -84,6 +96,7 @@ public class VerifyOtpController extends HttpServlet {
             HttpSession session = req.getSession(false);
             if (session != null) {
                 session.removeAttribute("pendingEmail");
+                session.removeAttribute("latestOtp");
             }
 
             resp.sendRedirect(req.getContextPath() + "/login?activated=1");

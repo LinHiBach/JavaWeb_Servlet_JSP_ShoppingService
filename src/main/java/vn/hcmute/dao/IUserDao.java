@@ -2,7 +2,6 @@ package vn.hcmute.dao;
 
 import java.util.List;
 import vn.hcmute.entity.User;
-import vn.hcmute.models.UserModel;
 
 public interface IUserDao {
     User findById(int id);
@@ -18,7 +17,5 @@ public interface IUserDao {
     boolean checkExistUsername(String username);
     boolean checkExistPhone(String phone);
 
-    // Aliases for compatibility
-    UserModel get(String username);
-    void insert(UserModel user);
+    User get(String username);
 }

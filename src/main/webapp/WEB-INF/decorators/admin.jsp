@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${requestScope.title != null ? requestScope.title : 'Admin Panel'}</title>
+    <title><sitemesh:write property="title"/> - Admin Panel</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- SiteMesh 3 Head Injection -->
+    <sitemesh:write property="head"/>
     
     <style>
         :root {
@@ -269,9 +271,9 @@
             </ul>
         </div>
 
-        <!-- MAIN CONTENT (SITEMESH INJECTED) -->
+        <!-- MAIN CONTENT (SITEMESH 3 INJECTED) -->
         <div class="admin-main-content">
-            <c:out value="${requestScope.body}" escapeXml="false"/>
+            <sitemesh:write property="body"/>
         </div>
     </div>
 

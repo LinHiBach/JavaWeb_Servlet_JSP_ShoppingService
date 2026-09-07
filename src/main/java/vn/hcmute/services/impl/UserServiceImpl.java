@@ -5,7 +5,6 @@ import java.util.List;
 import vn.hcmute.dao.IUserDao;
 import vn.hcmute.dao.impl.UserDaoImpl;
 import vn.hcmute.entity.User;
-import vn.hcmute.models.UserModel;
 import vn.hcmute.services.IUserService;
 import vn.hcmute.utils.EmailUtils;
 import vn.hcmute.utils.PasswordUtils;
@@ -108,10 +107,5 @@ public class UserServiceImpl implements IUserService {
     @Override
     public void update(User user) {
         userDao.update(user);
-    }
-
-    @Override
-    public void insert(UserModel user) {
-        userDao.insert((User) user);
     }
 }

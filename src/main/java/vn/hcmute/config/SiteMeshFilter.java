@@ -197,7 +197,9 @@ public class SiteMeshFilter implements Filter {
             return "/WEB-INF/decorators/admin.jsp";
         } else if (path.startsWith("/manager")) {
             return "/WEB-INF/decorators/manager.jsp";
-        } else if (path.startsWith("/login") || path.startsWith("/register") || path.startsWith("/waiting") || path.startsWith("/logout")) {
+        } else if (path.startsWith("/login") || path.startsWith("/register") || path.startsWith("/waiting") 
+                || path.startsWith("/logout") || path.startsWith("/forgot-password") 
+                || path.startsWith("/reset-password") || path.startsWith("/verify-otp")) {
             return null;
         } else {
             return "/WEB-INF/decorators/web.jsp";

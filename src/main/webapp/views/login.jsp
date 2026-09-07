@@ -215,7 +215,7 @@
                     Ghi nhớ đăng nhập
                 </label>
             </div>
-            <a href="#" class="small text-primary text-decoration-none fw-semibold">Quên mật khẩu?</a>
+            <a href="${pageContext.request.contextPath}/forgot-password" class="small text-primary text-decoration-none fw-semibold">Quên mật khẩu?</a>
         </div>
 
         <!-- Submit Button -->

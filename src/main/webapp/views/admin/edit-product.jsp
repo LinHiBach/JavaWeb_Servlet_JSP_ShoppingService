@@ -27,6 +27,18 @@
         </a>
     </div>
 
+    <!-- ERROR ALERT -->
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4 p-3 d-flex align-items-center gap-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-4"></i>
+            <div>
+                <strong class="d-block text-dark">Lỗi thao tác!</strong>
+                <span class="text-muted small">${error}</span>
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
     <div class="card border-0 shadow-sm rounded-4 p-4">
         <form action="${pageContext.request.contextPath}/admin/product/edit" method="post" enctype="multipart/form-data">
             <input type="hidden" name="id" value="${product.productId}">
@@ -34,12 +46,12 @@
             <div class="row g-3">
                 <div class="col-md-8">
                     <label class="form-label fw-bold text-dark">Tên Sản Phẩm *</label>
-                    <input type="text" name="productName" value="${product.productName}" class="form-control rounded-3" required>
+                    <input type="text" name="productName" value="${product.productName}" class="form-control rounded-3" minlength="2" maxlength="200" required>
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label fw-bold text-dark">Giá Bán (VNĐ) *</label>
-                    <input type="number" step="1000" name="price" value="${product.price}" class="form-control rounded-3" required>
+                    <input type="number" step="1000" min="1" name="price" value="${product.price}" class="form-control rounded-3" required>
                 </div>
 
                 <div class="col-md-6">

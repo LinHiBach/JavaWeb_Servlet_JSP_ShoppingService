@@ -28,6 +28,9 @@ public class ProductListController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
         User user = CookieUtils.checkAndRestoreSession(req, userService);
         if (user == null) {
             resp.sendRedirect(req.getContextPath() + "/login");

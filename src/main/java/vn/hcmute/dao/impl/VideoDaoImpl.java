@@ -19,7 +19,7 @@ public class VideoDaoImpl implements IVideoDao {
             enma.persist(video);
             trans.commit();
         } catch (Exception e) {
-            if (trans.isActive()) {
+            if (trans != null && trans.isActive()) {
                 trans.rollback();
             }
             e.printStackTrace();
@@ -38,7 +38,7 @@ public class VideoDaoImpl implements IVideoDao {
             enma.merge(video);
             trans.commit();
         } catch (Exception e) {
-            if (trans.isActive()) {
+            if (trans != null && trans.isActive()) {
                 trans.rollback();
             }
             e.printStackTrace();
@@ -60,7 +60,7 @@ public class VideoDaoImpl implements IVideoDao {
             }
             trans.commit();
         } catch (Exception e) {
-            if (trans.isActive()) {
+            if (trans != null && trans.isActive()) {
                 trans.rollback();
             }
             e.printStackTrace();

@@ -7,7 +7,6 @@ import jakarta.persistence.TypedQuery;
 import vn.hcmute.config.JpaConfig;
 import vn.hcmute.dao.IUserDao;
 import vn.hcmute.entity.User;
-import vn.hcmute.models.UserModel;
 
 public class UserDaoImpl implements IUserDao {
 
@@ -160,15 +159,7 @@ public class UserDaoImpl implements IUserDao {
     }
 
     @Override
-    public UserModel get(String username) {
-        User user = findByUsername(username);
-        if (user == null) return null;
-        if (user instanceof UserModel) return (UserModel) user;
-        return new UserModel(user);
-    }
-
-    @Override
-    public void insert(UserModel user) {
-        insert((User) user);
+    public User get(String username) {
+        return findByUsername(username);
     }
 }

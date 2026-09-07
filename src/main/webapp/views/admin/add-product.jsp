@@ -27,17 +27,29 @@
         </a>
     </div>
 
+    <!-- ERROR ALERT -->
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-4 mb-4 p-3 d-flex align-items-center gap-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill text-danger fs-4"></i>
+            <div>
+                <strong class="d-block text-dark">Lỗi thao tác!</strong>
+                <span class="text-muted small">${error}</span>
+            </div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </c:if>
+
     <div class="card border-0 shadow-sm rounded-4 p-4">
         <form action="${pageContext.request.contextPath}/admin/product/add" method="post" enctype="multipart/form-data">
             <div class="row g-3">
                 <div class="col-md-8">
                     <label class="form-label fw-bold text-dark">Tên Sản Phẩm *</label>
-                    <input type="text" name="productName" class="form-control rounded-3" placeholder="Nhập tên sản phẩm..." required autofocus>
+                    <input type="text" name="productName" value="${productName}" class="form-control rounded-3" placeholder="Nhập tên sản phẩm..." minlength="2" maxlength="200" required autofocus>
                 </div>
 
                 <div class="col-md-4">
                     <label class="form-label fw-bold text-dark">Giá Bán (VNĐ) *</label>
-                    <input type="number" step="1000" name="price" class="form-control rounded-3" placeholder="Ví dụ: 250000" required>
+                    <input type="number" step="1000" min="1" name="price" value="${price}" class="form-control rounded-3" placeholder="Ví dụ: 250000" required>
                 </div>
 
                 <div class="col-md-6">
@@ -45,7 +57,7 @@
                     <select name="categoryId" class="form-select rounded-3" required>
                         <option value="">-- Chọn danh mục --</option>
                         <c:forEach items="${categories}" var="c">
-                            <option value="${c.categoryId}">${c.categoryname}</option>
+                            <option value="${c.categoryId}" <c:if test="${categoryId == c.categoryId}">selected</c:if>>${c.categoryname}</option>
                         </c:forEach>
                     </select>
                 </div>
@@ -57,7 +69,7 @@
 
                 <div class="col-12">
                     <label class="form-label fw-bold text-dark">Mô Tả Sản Phẩm</label>
-                    <textarea name="description" rows="4" class="form-control rounded-3" placeholder="Nhập thông tin mô tả chi tiết sản phẩm..."></textarea>
+                    <textarea name="description" rows="4" class="form-control rounded-3" placeholder="Nhập thông tin mô tả chi tiết sản phẩm...">${description}</textarea>
                 </div>
 
                 <div class="col-12 text-end pt-3">

@@ -388,7 +388,7 @@
                             </label>
                             <div class="input-group-modern">
                                 <div class="input-icon-box"><i class="bi bi-person"></i></div>
-                                <input type="text" name="fullname" class="form-control-modern" value="${user.fullname}" required placeholder="Nhập họ và tên đầy đủ">
+                                <input type="text" name="fullname" class="form-control-modern" value="${user.fullname}" minlength="2" maxlength="255" required placeholder="Nhập họ và tên đầy đủ">
                             </div>
                         </div>
 
@@ -399,7 +399,7 @@
                             </label>
                             <div class="input-group-modern">
                                 <div class="input-icon-box"><i class="bi bi-telephone"></i></div>
-                                <input type="text" name="phone" class="form-control-modern" value="${user.phone}" placeholder="Nhập số điện thoại">
+                                <input type="tel" name="phone" class="form-control-modern" value="${user.phone}" pattern="0[0-9]{9}" title="Số điện thoại gồm 10 chữ số bắt đầu bằng số 0" placeholder="Ví dụ: 0912345678">
                             </div>
                         </div>
 

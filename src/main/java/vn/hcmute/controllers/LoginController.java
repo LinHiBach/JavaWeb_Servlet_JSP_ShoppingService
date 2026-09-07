@@ -21,6 +21,9 @@ public class LoginController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
         // 1. Nếu Session vẫn còn đang đăng nhập thì chuyển hướng vào trong
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("account") != null) {

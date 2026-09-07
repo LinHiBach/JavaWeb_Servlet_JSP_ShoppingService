@@ -110,18 +110,32 @@ public class CategoryControllers extends HttpServlet {
         String url = req.getRequestURI();
 
         if (url.contains("add")) {
-            try {
-                String name = req.getParameter("name");
-                if (name == null || name.trim().isEmpty()) {
-                    name = req.getParameter("categoryname");
-                }
-                if (name == null || name.trim().isEmpty()) {
-                    resp.sendRedirect(req.getContextPath() + "/admin/category/add");
-                    return;
-                }
+            String name = req.getParameter("name");
+            if (name == null || name.trim().isEmpty()) {
+                name = req.getParameter("categoryname");
+            }
+            if (name == null || name.trim().isEmpty()) {
+                req.setAttribute("error", "Tên danh mục không được để trống!");
+                req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
+                return;
+            }
+            name = name.trim();
+            if (name.length() < 2 || name.length() > 100) {
+                req.setAttribute("error", "Tên danh mục phải từ 2 đến 100 ký tự!");
+                req.setAttribute("name", name);
+                req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
+                return;
+            }
+            if (cateService.findByCategoryname(name) != null) {
+                req.setAttribute("error", "Tên danh mục [" + name + "] đã tồn tại trong hệ thống!");
+                req.setAttribute("name", name);
+                req.getRequestDispatcher("/views/admin/add-category.jsp").forward(req, resp);
+                return;
+            }
 
+            try {
                 Category category = new Category();
-                category.setName(name.trim());
+                category.setName(name);
                 category.setStatus(1);
 
                 try {
@@ -135,24 +149,26 @@ public class CategoryControllers extends HttpServlet {
                         String ext = "";
                         int dotIdx = submittedName.lastIndexOf(".");
                         if (dotIdx > 0) {
-                            ext = submittedName.substring(dotIdx + 1);
+                            ext = submittedName.substring(dotIdx + 1).toLowerCase();
                         }
-                        String fileName = System.currentTimeMillis() + (ext.isEmpty() ? "" : "." + ext);
+                        if (ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("webp") || ext.equals("gif")) {
+                            String fileName = System.currentTimeMillis() + "." + ext;
 
-                        File uploadDir1 = new File(Constant.DIR + File.separator + "category");
-                        if (!uploadDir1.exists()) {
-                            uploadDir1.mkdirs();
+                            File uploadDir1 = new File(Constant.DIR + File.separator + "category");
+                            if (!uploadDir1.exists()) {
+                                uploadDir1.mkdirs();
+                            }
+                            String savedPath = uploadDir1.getAbsolutePath() + File.separator + fileName;
+                            filePart.write(savedPath);
+                            category.setImages("category/" + fileName);
+
+                            // Backup sang thư mục upload của dự án
+                            try {
+                                File uploadDir2 = new File("C:\\Users\\LEGIO\\Documents\\workspace-spring-tools-for-eclipse-5.3.0.RELEASE\\BaiTapMVC_JDBC\\upload\\category");
+                                if (!uploadDir2.exists()) uploadDir2.mkdirs();
+                                Files.copy(Paths.get(savedPath), Paths.get(uploadDir2.getAbsolutePath() + File.separator + fileName), StandardCopyOption.REPLACE_EXISTING);
+                            } catch (Exception ignored) {}
                         }
-                        String savedPath = uploadDir1.getAbsolutePath() + File.separator + fileName;
-                        filePart.write(savedPath);
-                        category.setImages("category/" + fileName);
-
-                        // Backup sang thư mục upload của dự án
-                        try {
-                            File uploadDir2 = new File("C:\\Users\\LEGIO\\Documents\\workspace-spring-tools-for-eclipse-5.3.0.RELEASE\\BaiTapMVC_JDBC\\upload\\category");
-                            if (!uploadDir2.exists()) uploadDir2.mkdirs();
-                            Files.copy(Paths.get(savedPath), Paths.get(uploadDir2.getAbsolutePath() + File.separator + fileName), StandardCopyOption.REPLACE_EXISTING);
-                        } catch (Exception ignored) {}
                     }
                 } catch (Exception fileEx) {
                     fileEx.printStackTrace();
@@ -165,17 +181,48 @@ public class CategoryControllers extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/category/list");
 
         } else if (url.contains("edit")) {
+            int id = -1;
             try {
-                int id = Integer.parseInt(req.getParameter("id"));
-                String name = req.getParameter("name");
-                if (name == null || name.trim().isEmpty()) {
-                    name = req.getParameter("categoryname");
-                }
+                id = Integer.parseInt(req.getParameter("id"));
+            } catch (Exception e) {
+                resp.sendRedirect(req.getContextPath() + "/admin/category/list");
+                return;
+            }
 
-                Category category = new Category();
-                category.setCategoryId(id);
-                category.setCategoryname(name != null ? name.trim() : "");
-                category.setStatus(1);
+            Category currentCat = cateService.findById(id);
+            if (currentCat == null) {
+                resp.sendRedirect(req.getContextPath() + "/admin/category/list");
+                return;
+            }
+
+            String name = req.getParameter("name");
+            if (name == null || name.trim().isEmpty()) {
+                name = req.getParameter("categoryname");
+            }
+            if (name == null || name.trim().isEmpty()) {
+                req.setAttribute("error", "Tên danh mục không được để trống!");
+                req.setAttribute("category", currentCat);
+                req.getRequestDispatcher("/views/admin/edit-category.jsp").forward(req, resp);
+                return;
+            }
+            name = name.trim();
+            if (name.length() < 2 || name.length() > 100) {
+                req.setAttribute("error", "Tên danh mục phải từ 2 đến 100 ký tự!");
+                req.setAttribute("category", currentCat);
+                req.getRequestDispatcher("/views/admin/edit-category.jsp").forward(req, resp);
+                return;
+            }
+
+            Category checkCat = cateService.findByCategoryname(name);
+            if (checkCat != null && checkCat.getCategoryId() != id) {
+                req.setAttribute("error", "Tên danh mục [" + name + "] đã được sử dụng bởi danh mục khác!");
+                req.setAttribute("category", currentCat);
+                req.getRequestDispatcher("/views/admin/edit-category.jsp").forward(req, resp);
+                return;
+            }
+
+            try {
+                currentCat.setName(name);
 
                 try {
                     Part filePart = req.getPart("icon");
@@ -188,29 +235,31 @@ public class CategoryControllers extends HttpServlet {
                         String ext = "";
                         int dotIdx = submittedName.lastIndexOf(".");
                         if (dotIdx > 0) {
-                            ext = submittedName.substring(dotIdx + 1);
+                            ext = submittedName.substring(dotIdx + 1).toLowerCase();
                         }
-                        String fileName = System.currentTimeMillis() + (ext.isEmpty() ? "" : "." + ext);
+                        if (ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png") || ext.equals("webp") || ext.equals("gif")) {
+                            String fileName = System.currentTimeMillis() + "." + ext;
 
-                        File uploadDir1 = new File(Constant.DIR + File.separator + "category");
-                        if (!uploadDir1.exists()) {
-                            uploadDir1.mkdirs();
+                            File uploadDir1 = new File(Constant.DIR + File.separator + "category");
+                            if (!uploadDir1.exists()) {
+                                uploadDir1.mkdirs();
+                            }
+                            String savedPath = uploadDir1.getAbsolutePath() + File.separator + fileName;
+                            filePart.write(savedPath);
+                            currentCat.setImages("category/" + fileName);
+
+                            try {
+                                File uploadDir2 = new File("C:\\Users\\LEGIO\\Documents\\workspace-spring-tools-for-eclipse-5.3.0.RELEASE\\BaiTapMVC_JDBC\\upload\\category");
+                                if (!uploadDir2.exists()) uploadDir2.mkdirs();
+                                Files.copy(Paths.get(savedPath), Paths.get(uploadDir2.getAbsolutePath() + File.separator + fileName), StandardCopyOption.REPLACE_EXISTING);
+                            } catch (Exception ignored) {}
                         }
-                        String savedPath = uploadDir1.getAbsolutePath() + File.separator + fileName;
-                        filePart.write(savedPath);
-                        category.setImages("category/" + fileName);
-
-                        try {
-                            File uploadDir2 = new File("C:\\Users\\LEGIO\\Documents\\workspace-spring-tools-for-eclipse-5.3.0.RELEASE\\BaiTapMVC_JDBC\\upload\\category");
-                            if (!uploadDir2.exists()) uploadDir2.mkdirs();
-                            Files.copy(Paths.get(savedPath), Paths.get(uploadDir2.getAbsolutePath() + File.separator + fileName), StandardCopyOption.REPLACE_EXISTING);
-                        } catch (Exception ignored) {}
                     }
                 } catch (Exception fileEx) {
                     fileEx.printStackTrace();
                 }
 
-                cateService.update(category);
+                cateService.update(currentCat);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -161,14 +161,17 @@
         </div>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/register" method="post">
+    <form action="${pageContext.request.contextPath}/register" method="post" class="needs-validation" novalidate>
         <!-- Username -->
         <div class="input-group-custom">
             <label class="form-label">Tên tài khoản (Username) *</label>
             <div class="input-wrapper">
                 <i class="bi bi-person-badge-fill input-icon"></i>
-                <input type="text" name="username" class="form-control" placeholder="Nhập tên tài khoản" required autofocus>
+                <input type="text" name="username" value="${username}" class="form-control ${not empty errors.username ? 'is-invalid' : ''}" placeholder="Nhập tên tài khoản (4-30 ký tự)" required pattern="^[a-zA-Z0-9_]{4,30}$" autofocus>
             </div>
+            <c:if test="${not empty errors.username}">
+                <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>${errors.username}</div>
+            </c:if>
         </div>
 
         <!-- Fullname -->
@@ -176,8 +179,11 @@
             <label class="form-label">Họ và tên</label>
             <div class="input-wrapper">
                 <i class="bi bi-person-vcard-fill input-icon"></i>
-                <input type="text" name="fullname" class="form-control" placeholder="Ví dụ: Nguyễn Văn A">
+                <input type="text" name="fullname" value="${fullname}" class="form-control ${not empty errors.fullname ? 'is-invalid' : ''}" placeholder="Ví dụ: Nguyễn Văn A">
             </div>
+            <c:if test="${not empty errors.fullname}">
+                <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>${errors.fullname}</div>
+            </c:if>
         </div>
 
         <!-- Email -->
@@ -185,8 +191,11 @@
             <label class="form-label">Địa chỉ Email *</label>
             <div class="input-wrapper">
                 <i class="bi bi-envelope-fill input-icon"></i>
-                <input type="email" name="email" class="form-control" placeholder="example@gmail.com" required>
+                <input type="email" name="email" value="${email}" class="form-control ${not empty errors.email ? 'is-invalid' : ''}" placeholder="example@gmail.com" required>
             </div>
+            <c:if test="${not empty errors.email}">
+                <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>${errors.email}</div>
+            </c:if>
         </div>
 
         <!-- Phone -->
@@ -194,8 +203,11 @@
             <label class="form-label">Số điện thoại</label>
             <div class="input-wrapper">
                 <i class="bi bi-telephone-fill input-icon"></i>
-                <input type="tel" name="phone" class="form-control" placeholder="Ví dụ: 0901234567">
+                <input type="tel" name="phone" value="${phone}" class="form-control ${not empty errors.phone ? 'is-invalid' : ''}" placeholder="Ví dụ: 0901234567" pattern="^0[0-9]{9}$">
             </div>
+            <c:if test="${not empty errors.phone}">
+                <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>${errors.phone}</div>
+            </c:if>
         </div>
 
         <!-- Password -->
@@ -203,8 +215,11 @@
             <label class="form-label">Mật khẩu *</label>
             <div class="input-wrapper">
                 <i class="bi bi-shield-lock-fill input-icon"></i>
-                <input type="password" name="password" class="form-control" placeholder="Tạo mật khẩu an toàn" required>
+                <input type="password" name="password" class="form-control ${not empty errors.password ? 'is-invalid' : ''}" placeholder="Tối thiểu 6 ký tự" required minlength="6">
             </div>
+            <c:if test="${not empty errors.password}">
+                <div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>${errors.password}</div>
+            </c:if>
         </div>
 
         <button type="submit" class="btn-register">

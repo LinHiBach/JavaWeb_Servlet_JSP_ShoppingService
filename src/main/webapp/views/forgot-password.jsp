@@ -65,10 +65,10 @@
 
     <form action="${pageContext.request.contextPath}/forgot-password" method="post">
         <div class="text-start mb-4">
-            <label class="form-label fw-bold text-dark small">Địa chỉ Email đăng ký</label>
+            <label class="form-label fw-bold text-dark small">Email đăng ký hoặc Tên tài khoản</label>
             <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                <input type="email" name="email" value="${email}" class="form-control" placeholder="example@gmail.com" required autofocus>
+                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                <input type="text" name="email" value="${email}" class="form-control" placeholder="Nhập email hoặc username (ví dụ: admin, user...)" required autofocus>
             </div>
         </div>
 

@@ -12,9 +12,9 @@ import jakarta.mail.internet.MimeMessage;
 
 public class EmailUtils {
 
-    // Cấu hình Email gửi đi (Có thể dùng Gmail App Password)
-    private static final String FROM_EMAIL = "shopping.mvc.service@gmail.com";
-    private static final String APP_PASSWORD = "abcd efgh ijkl mnop"; // Thay mật khẩu ứng dụng Gmail thực tế khi chạy
+    // Thông tin Gmail thật của bạn
+    private static final String FROM_EMAIL = "huybach219@gmail.com";
+    private static final String APP_PASSWORD = "ukce gyrp zyfz fnul"; // Mật khẩu ứng dụng Gmail 16 ký tự của bạn
 
     public static String generateOtp() {
         Random random = new Random();
@@ -30,6 +30,11 @@ public class EmailUtils {
             actionText = "ĐẶT LẠI MẬT KHẨU";
         }
 
+        System.out.println("\n=======================================================");
+        System.out.println("🔥 [MÃ OTP XÁC THỰC]: " + otpCode);
+        System.out.println("📧 Gửi tới: " + toEmail + " | Mục đích: " + actionText);
+        System.out.println("=======================================================\n");
+
         String htmlContent = "<div style=\"font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;\">"
                 + "<h2 style=\"color: #0077ff; text-align: center;\">Shopping Store MVC</h2>"
                 + "<p>Xin chào,</p>"
@@ -38,10 +43,22 @@ public class EmailUtils {
                 + otpCode + "</div>"
                 + "<p style=\"color: #666; font-size: 13px;\">Vui lòng nhập mã này vào trang web để tiếp tục. Mã OTP có hiệu lực trong thời gian ngắn.</p>"
                 + "<hr style=\"border: none; border-top: 1px solid #eee; margin: 20px 0;\">"
-                + "<p style=\"color: #999; font-size: 12px; text-align: center;\">Đây là email tự động, vui lòng không phản hồi.</p>"
+                + "<p style=\"color: #999; font-size: 12px; text-align: center;\">Đây là email tự động từ hệ thống Shopping Store, vui lòng không phản hồi.</p>"
                 + "</div>";
 
-        return sendHtmlEmail(toEmail, subject, htmlContent);
+        final String mailSubject = subject;
+        final String mailHtml = htmlContent;
+
+        // Gửi email bất đồng bộ qua luồng ngầm để giao diện web phản hồi tức thì
+        new Thread(() -> {
+            sendHtmlEmail(toEmail, mailSubject, mailHtml);
+        }).start();
+
+        return true;
+    }
+
+    public static boolean sendOtpEmail(String toEmail, String otpCode) {
+        return sendOtpEmail(toEmail, otpCode, "register");
     }
 
     public static boolean sendHtmlEmail(String toEmail, String subject, String htmlBody) {
@@ -50,6 +67,8 @@ public class EmailUtils {
         props.put("mail.smtp.port", "587");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.connectiontimeout", "8000");
+        props.put("mail.smtp.timeout", "8000");
 
         Authenticator auth = new Authenticator() {
             @Override
@@ -66,11 +85,11 @@ public class EmailUtils {
             message.setSubject(subject, "UTF-8");
             message.setContent(htmlBody, "text/html; charset=UTF-8");
 
-            // Thử gửi Email ngầm
             Transport.send(message);
+            System.out.println("✅ [EmailUtils] Đã gửi email thực tế thành công tới: " + toEmail);
             return true;
         } catch (Exception e) {
-            System.err.println("⚠️ [EmailUtils] Lỗi khi gửi Email: " + e.getMessage());
+            System.err.println("⚠️ [EmailUtils] Lỗi gửi Gmail SMTP: " + e.getMessage());
             return false;
         }
     }

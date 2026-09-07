@@ -63,22 +63,34 @@
         </div>
     </c:if>
 
+    <c:if test="${not empty sessionScope.latestOtp}">
+        <div class="alert alert-info py-2 px-3 small mb-3 rounded-3 text-start">
+            <div class="d-flex align-items-center justify-content-between">
+                <span><i class="bi bi-key-fill text-primary me-1"></i> <strong>Mã OTP:</strong></span>
+                <span class="badge bg-primary fs-6 px-3 py-2 letter-spacing-1">${sessionScope.latestOtp}</span>
+            </div>
+            <div class="text-muted mt-1" style="font-size: 11px;">
+                (Mã OTP gửi về: <strong>${email}</strong> & hiển thị tại đây để bạn tiện thử nghiệm)
+            </div>
+        </div>
+    </c:if>
+
     <form action="${pageContext.request.contextPath}/reset-password" method="post">
         <input type="hidden" name="email" value="${email}">
 
         <div class="text-start mb-3">
             <label class="form-label fw-bold text-dark small">Mã OTP (6 số)</label>
-            <input type="text" name="otp" class="form-control text-center fw-bold fs-5" placeholder="Mã OTP" maxlength="6" required autofocus>
+            <input type="text" name="otp" value="${otp}" class="form-control text-center fw-bold fs-5" placeholder="Mã OTP" maxlength="6" pattern="^[0-9]{6}$" required autofocus>
         </div>
 
         <div class="text-start mb-3">
-            <label class="form-label fw-bold text-dark small">Mật khẩu mới</label>
-            <input type="password" name="newPassword" class="form-control" placeholder="Mật khẩu mới" required>
+            <label class="form-label fw-bold text-dark small">Mật khẩu mới (Tối thiểu 6 ký tự)</label>
+            <input type="password" name="newPassword" class="form-control" placeholder="Mật khẩu mới" minlength="6" required>
         </div>
 
         <div class="text-start mb-4">
             <label class="form-label fw-bold text-dark small">Xác nhận mật khẩu mới</label>
-            <input type="password" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới" required>
+            <input type="password" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới" minlength="6" required>
         </div>
 
         <button type="submit" class="btn-custom mb-3">

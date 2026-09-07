@@ -99,6 +99,18 @@
         </div>
     </c:if>
 
+    <c:if test="${not empty sessionScope.latestOtp}">
+        <div class="alert alert-info py-2 px-3 small mb-3 rounded-3 text-start">
+            <div class="d-flex align-items-center justify-content-between">
+                <span><i class="bi bi-shield-lock-fill text-primary me-1"></i> <strong>Mã OTP:</strong></span>
+                <span class="badge bg-primary fs-6 px-3 py-2 letter-spacing-1">${sessionScope.latestOtp}</span>
+            </div>
+            <div class="text-muted mt-1" style="font-size: 11px;">
+                (Mã OTP gửi về: <strong>${email}</strong> & hiển thị tại đây để bạn tiện kích hoạt)
+            </div>
+        </div>
+    </c:if>
+
     <form action="${pageContext.request.contextPath}/verify-otp" method="post">
         <input type="hidden" name="email" value="${email}">
 

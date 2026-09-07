@@ -5,6 +5,7 @@
         <pattern>/profile*</pattern>
         <pattern>/user/*</pattern>
         <pattern>/home*</pattern>
+        <pattern>/product*</pattern>
     </decorator>
 
     <!-- Admin Decorator -->
@@ -21,7 +22,11 @@
     <excludes>
         <pattern>/login*</pattern>
         <pattern>/register*</pattern>
+        <pattern>/forgot-password*</pattern>
+        <pattern>/reset-password*</pattern>
+        <pattern>/verify-otp*</pattern>
         <pattern>/waiting*</pattern>
+        <pattern>/logout*</pattern>
         <pattern>/image*</pattern>
     </excludes>
 </decorators>

@@ -98,13 +98,21 @@ public class ProfileController extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/profile");
             return;
         }
-        if (fullname.trim().length() > 255) {
-            session.setAttribute("error", "Họ và tên không được vượt quá 255 ký tự!");
+        if (fullname.trim().length() < 2 || fullname.trim().length() > 255) {
+            session.setAttribute("error", "Họ và tên phải từ 2 đến 255 ký tự!");
             resp.sendRedirect(req.getContextPath() + "/profile");
             return;
         }
 
-        // Validation 2: Phone validation (optional field, trim and limit length)
+        // Validation 2: Phone validation (optional field, but if provided must match 10 digits ^0[0-9]{9}$)
+        if (phone != null && !phone.trim().isEmpty()) {
+            if (!phone.trim().matches("^0[0-9]{9}$")) {
+                session.setAttribute("error", "Số điện thoại không hợp lệ! Vui lòng nhập đúng 10 chữ số (bắt đầu bằng số 0).");
+                resp.sendRedirect(req.getContextPath() + "/profile");
+                return;
+            }
+        }
+
         boolean isChanged = false;
 
         String oldFullname = user.getFullname() != null ? user.getFullname().trim() : "";
@@ -129,6 +137,12 @@ public class ProfileController extends HttpServlet {
             }
 
             if (filePart != null && filePart.getSize() > 0 && filePart.getSubmittedFileName() != null && !filePart.getSubmittedFileName().trim().isEmpty()) {
+                if (filePart.getSize() > 10 * 1024 * 1024) {
+                    session.setAttribute("error", "Dung lượng ảnh tối đa là 10MB!");
+                    resp.sendRedirect(req.getContextPath() + "/profile");
+                    return;
+                }
+
                 String submittedName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
                 String contentType = filePart.getContentType();
                 

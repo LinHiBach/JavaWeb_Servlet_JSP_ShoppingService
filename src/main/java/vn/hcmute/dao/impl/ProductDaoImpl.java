@@ -51,7 +51,8 @@ public class ProductDaoImpl implements IProductDao {
         try {
             String jpql = "SELECT p FROM Product p ORDER BY p.productId DESC";
             TypedQuery<Product> query = enma.createQuery(jpql, Product.class);
-            query.setFirstResult((page - 1) * pageSize);
+            int first = page > 0 ? (page - 1) * pageSize : 0;
+            query.setFirstResult(first);
             query.setMaxResults(pageSize);
             return query.getResultList();
         } finally {
@@ -66,7 +67,8 @@ public class ProductDaoImpl implements IProductDao {
             String jpql = "SELECT p FROM Product p WHERE p.category.categoryId = :cateId ORDER BY p.productId DESC";
             TypedQuery<Product> query = enma.createQuery(jpql, Product.class);
             query.setParameter("cateId", categoryId);
-            query.setFirstResult((page - 1) * pageSize);
+            int first = page > 0 ? (page - 1) * pageSize : 0;
+            query.setFirstResult(first);
             query.setMaxResults(pageSize);
             return query.getResultList();
         } finally {

@@ -14,6 +14,9 @@ public class LogoutController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
         // 1. Hủy phiên làm việc (Session)
         HttpSession session = req.getSession(false);
         if (session != null) {

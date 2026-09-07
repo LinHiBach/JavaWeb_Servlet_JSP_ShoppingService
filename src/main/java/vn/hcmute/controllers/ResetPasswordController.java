@@ -20,6 +20,9 @@ public class ResetPasswordController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
         HttpSession session = req.getSession(false);
         String email = (session != null) ? (String) session.getAttribute("resetEmail") : null;
 
@@ -38,6 +41,13 @@ public class ResetPasswordController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         String email = req.getParameter("email");
+        if (email == null || email.trim().isEmpty()) {
+            HttpSession session = req.getSession(false);
+            if (session != null) {
+                email = (String) session.getAttribute("resetEmail");
+            }
+        }
+
         String otp = req.getParameter("otp");
         String newPassword = req.getParameter("newPassword");
         String confirmPassword = req.getParameter("confirmPassword");
@@ -47,8 +57,17 @@ public class ResetPasswordController extends HttpServlet {
             return;
         }
 
+        req.setAttribute("otp", otp != null ? otp.trim() : "");
+
         if (otp == null || otp.trim().isEmpty() || newPassword == null || newPassword.trim().isEmpty()) {
             req.setAttribute("alert", "Vui lòng điền đầy đủ thông tin mã OTP và Mật khẩu mới!");
+            req.setAttribute("email", email);
+            req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
+            return;
+        }
+
+        if (newPassword.trim().length() < 6) {
+            req.setAttribute("alert", "Mật khẩu mới phải có độ dài ít nhất 6 ký tự!");
             req.setAttribute("email", email);
             req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
             return;
@@ -72,6 +91,7 @@ public class ResetPasswordController extends HttpServlet {
             HttpSession session = req.getSession(false);
             if (session != null) {
                 session.removeAttribute("resetEmail");
+                session.removeAttribute("latestOtp");
             }
 
             resp.sendRedirect(req.getContextPath() + "/login?resetSuccess=1");
