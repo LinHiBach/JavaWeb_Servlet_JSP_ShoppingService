@@ -252,6 +252,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="${pageContext.request.contextPath}/admin/product/list">
+                        <i class="bi bi-box-seam"></i> Quản lý Sản phẩm
+                    </a>
+                </li>
+                <li>
                     <a href="${pageContext.request.contextPath}/profile">
                         <i class="bi bi-person-badge-fill"></i> Hồ sơ cá nhân (Profile)
                     </a>

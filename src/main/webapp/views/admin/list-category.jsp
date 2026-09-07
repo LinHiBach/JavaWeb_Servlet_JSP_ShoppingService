@@ -499,8 +499,8 @@
                 </ul>
 
                 <li>
-                    <a href="#">
-                        <i class="bi bi-display"></i> Quản lý sản phẩm
+                    <a href="${pageContext.request.contextPath}/admin/product/list">
+                        <i class="bi bi-box-seam"></i> Quản lý sản phẩm
                     </a>
                 </li>
                 <li>

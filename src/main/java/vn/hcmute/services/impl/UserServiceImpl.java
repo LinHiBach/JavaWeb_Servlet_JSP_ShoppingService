@@ -7,6 +7,8 @@ import vn.hcmute.dao.impl.UserDaoImpl;
 import vn.hcmute.entity.User;
 import vn.hcmute.models.UserModel;
 import vn.hcmute.services.IUserService;
+import vn.hcmute.utils.EmailUtils;
+import vn.hcmute.utils.PasswordUtils;
 
 public class UserServiceImpl implements IUserService {
     private final IUserDao userDao = new UserDaoImpl();
@@ -14,8 +16,11 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User login(String username, String password) {
         User user = this.get(username);
-        if (user != null && password != null && password.equals(user.getPassword())) {
-            return user;
+        if (user != null && password != null) {
+            // Kiểm tra mật khẩu mã hóa BCrypt hoặc plain text
+            if (PasswordUtils.checkPassword(password, user.getPassword())) {
+                return user;
+            }
         }
         return null;
     }
@@ -41,21 +46,42 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
+    public User findByCodeAndEmail(String code, String email) {
+        return userDao.findByCodeAndEmail(code, email);
+    }
+
+    @Override
     public List<User> findAll() {
         return userDao.findAll();
     }
 
     @Override
     public boolean register(String username, String password, String email, String fullname, String phone) {
+        String otpCode = EmailUtils.generateOtp();
+        return registerWithOtp(username, password, email, fullname, phone, otpCode);
+    }
+
+    @Override
+    public boolean registerWithOtp(String username, String password, String email, String fullname, String phone, String otpCode) {
         if (userDao.checkExistUsername(username) || userDao.checkExistEmail(email)) {
             return false;
         }
         long millis = System.currentTimeMillis();
         Date date = new Date(millis);
 
-        // Mặc định roleid = 3 (Member/User)
-        User newUser = new User(email, username, fullname, password, null, 3, phone, date);
+        // Mã hóa mật khẩu bằng BCrypt
+        String hashedPassword = PasswordUtils.hashPassword(password);
+
+        // Tạo user mới với status = 0 (chưa kích hoạt) và gán mã OTP
+        User newUser = new User(email, username, fullname, hashedPassword, null, 3, phone, date);
+        newUser.setCode(otpCode);
+        newUser.setStatus(0); // Chờ xác thực OTP
+
         userDao.insert(newUser);
+
+        // Gửi email chứa mã OTP
+        EmailUtils.sendOtpEmail(email, otpCode, "register");
+
         return true;
     }
 

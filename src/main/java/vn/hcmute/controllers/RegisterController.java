@@ -6,6 +6,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import vn.hcmute.entity.User;
 import vn.hcmute.services.IUserService;
@@ -69,7 +70,9 @@ public class RegisterController extends HttpServlet {
 
         boolean isSuccess = service.register(username.trim(), password, email.trim(), fullname != null ? fullname.trim() : "", phone != null ? phone.trim() : "");
         if (isSuccess) {
-            resp.sendRedirect(req.getContextPath() + "/login?registered=1");
+            HttpSession session = req.getSession(true);
+            session.setAttribute("pendingEmail", email.trim());
+            resp.sendRedirect(req.getContextPath() + "/verify-otp");
         } else {
             req.setAttribute("alert", "Lỗi hệ thống! Không thể đăng ký lúc này.");
             req.getRequestDispatcher(Constant.Path.REGISTER).forward(req, resp);

@@ -48,6 +48,12 @@ public class User implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date createdDate;
 
+    @Column(name = "code", length = 10, nullable = true)
+    private String code;
+
+    @Column(name = "status", nullable = true)
+    private Integer status = 1;
+
     public User() {
         super();
     }
@@ -64,6 +70,7 @@ public class User implements Serializable {
         this.roleid = roleid;
         this.phone = phone;
         this.createdDate = createdDate;
+        this.status = 1;
     }
 
     public User(String email, String username, String fullname, String password, String avatar, int roleid,
@@ -77,6 +84,7 @@ public class User implements Serializable {
         this.roleid = roleid;
         this.phone = phone;
         this.createdDate = createdDate;
+        this.status = 1;
     }
 
     public int getId() {
@@ -168,10 +176,26 @@ public class User implements Serializable {
         this.createdDate = createdDate;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public int getStatus() {
+        return (status != null) ? status : 1;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return "User [id=" + id + ", email=" + email + ", username=" + username + ", fullname=" + fullname
                 + ", password=" + password + ", avatar=" + avatar + ", roleid=" + roleid + ", phone=" + phone
-                + ", createdDate=" + createdDate + "]";
+                + ", createdDate=" + createdDate + ", status=" + status + "]";
     }
 }

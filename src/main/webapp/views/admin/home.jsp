@@ -313,7 +313,7 @@
                     <li><a href="${pageContext.request.contextPath}/admin/category/add"><i class="bi bi-plus-circle me-1"></i> Thêm danh mục mới</a></li>
                     <li><a href="${pageContext.request.contextPath}/admin/category/list"><i class="bi bi-list-ul me-1"></i> Danh sách danh mục</a></li>
                 </ul>
-                <li><a href="#"><i class="bi bi-display"></i> Quản lý sản phẩm</a></li>
+                <li><a href="${pageContext.request.contextPath}/admin/product/list"><i class="bi bi-box-seam"></i> Quản lý sản phẩm</a></li>
                 <li><a href="#"><i class="bi bi-people-fill"></i> Quản lý tài khoản</a></li>
             </ul>
         </div>

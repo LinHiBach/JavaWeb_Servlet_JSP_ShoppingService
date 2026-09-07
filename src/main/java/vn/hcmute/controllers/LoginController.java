@@ -35,10 +35,17 @@ public class LoginController extends HttpServlet {
             req.setAttribute("isRemember", true);
         }
 
-        // 3. Hiển thị thông báo sau khi vừa đăng ký thành công
+        // 3. Hiển thị thông báo sau khi đăng ký hoặc kích hoạt hoặc đổi mật khẩu
         String registered = req.getParameter("registered");
-        if ("1".equals(registered)) {
-            req.setAttribute("successAlert", "Đăng ký tài khoản thành công! Vui lòng đăng nhập.");
+        String activated = req.getParameter("activated");
+        String resetSuccess = req.getParameter("resetSuccess");
+
+        if ("1".equals(activated)) {
+            req.setAttribute("successAlert", "Kích hoạt tài khoản thành công! Bạn có thể đăng nhập ngay.");
+        } else if ("1".equals(resetSuccess)) {
+            req.setAttribute("successAlert", "Đặt lại mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới.");
+        } else if ("1".equals(registered)) {
+            req.setAttribute("successAlert", "Đăng ký tài khoản thành công! Vui lòng kiểm tra email nhập mã OTP kích hoạt.");
         }
 
         req.getRequestDispatcher(Constant.Path.LOGIN).forward(req, resp);
@@ -65,16 +72,23 @@ public class LoginController extends HttpServlet {
 
         User user = service.login(username.trim(), password);
         if (user != null) {
+            // Kiểm tra trạng thái kích hoạt tài khoản OTP (0: Chưa kích hoạt, 1: Đã kích hoạt)
+            if (user.getStatus() == 0) {
+                HttpSession session = req.getSession(true);
+                session.setAttribute("pendingEmail", user.getEmail());
+                req.setAttribute("alert", "Tài khoản của bạn chưa được kích hoạt OTP! Vui lòng nhập mã OTP gửi tới email.");
+                resp.sendRedirect(req.getContextPath() + "/verify-otp");
+                return;
+            }
+
             // Lưu thông tin người dùng vào Session
             HttpSession session = req.getSession(true);
             session.setAttribute("account", user);
 
             // Xử lý Cookie Remember Me
             if (isRememberMe) {
-                // Lưu cookie username trong 24 giờ (86400 giây)
                 CookieUtils.add(resp, Constant.COOKIE_REMEMBER, username.trim(), 24 * 60 * 60);
             } else {
-                // Nếu người dùng chủ động bỏ chọn ghi nhớ, xóa cookie cũ
                 CookieUtils.delete(resp, Constant.COOKIE_REMEMBER);
             }
 

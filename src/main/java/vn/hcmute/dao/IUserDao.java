@@ -8,6 +8,7 @@ public interface IUserDao {
     User findById(int id);
     User findByUsername(String username);
     User findByEmail(String email);
+    User findByCodeAndEmail(String code, String email);
     List<User> findAll();
     void insert(User user);
     void update(User user);
