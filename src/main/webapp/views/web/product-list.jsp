@@ -6,180 +6,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Sản Phẩm (Phân Trang 6sp/trang) - Shopping Store</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
+    <title>Danh Sách Sản Phẩm - Shopping Store</title>
     <style>
-        .product-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            background: #ffffff;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+        /* ===== PRODUCT LIST PAGE ===== */
+
+        /* Page Header */
+        .pl-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
         }
-        .product-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 15px 35px rgba(0, 80, 200, 0.12);
+        .pl-title { font-size: 24px; font-weight: 900; color: #0f172a; margin-bottom: 3px; }
+        .pl-sub { font-size: 13px; color: #64748b; }
+
+        .product-count-badge {
+            display: inline-flex; align-items: center; gap: 7px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: #fff; font-size: 13.5px; font-weight: 800;
+            padding: 8px 18px; border-radius: 99px;
+            box-shadow: 0 4px 14px rgba(37,99,235,0.3);
         }
 
-        .product-img-wrapper {
-            position: relative;
-            height: 210px;
-            background: #f8fafc;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* Category Chip Bar */
+        .category-chip-bar {
+            display: flex; gap: 8px; flex-wrap: wrap;
+            margin-bottom: 28px;
         }
-        .product-img {
-            max-height: 100%;
-            max-width: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
+        .cate-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 18px;
+            border-radius: 99px;
+            font-size: 13.5px; font-weight: 700;
+            text-decoration: none; transition: all 0.22s;
+            border: 1.5px solid #e2e8f0;
+            background: #fff; color: #475569;
         }
-        .product-card:hover .product-img {
-            transform: scale(1.08);
-        }
+        .cate-chip:hover { border-color: #2563eb; color: #2563eb; background: #eff6ff; transform: translateY(-1px); }
+        .cate-chip.active { background: #2563eb; color: #fff; border-color: #2563eb; box-shadow: 0 4px 14px rgba(37,99,235,0.3); }
 
-        .price-text {
-            color: #0077ff;
-            font-weight: 800;
-            font-size: 19px;
+        /* Product Card */
+        .product-card-v2 {
+            background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px;
+            overflow: hidden; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+            height: 100%; display: flex; flex-direction: column; position: relative;
         }
+        .product-card-v2:hover { transform: translateY(-8px); box-shadow: 0 20px 48px rgba(37,99,235,0.13); border-color: #bfdbfe; }
 
-        .cate-filter-btn {
-            border-radius: 20px;
-            padding: 6px 18px;
-            font-weight: 600;
-            font-size: 14px;
+        .product-img-box {
+            position: relative; height: 220px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+        .product-img-main { max-height: 100%; max-width: 100%; object-fit: cover; transition: transform 0.4s cubic-bezier(0.4,0,0.2,1); }
+        .product-card-v2:hover .product-img-main { transform: scale(1.09); }
+
+        .product-overlay {
+            position: absolute; inset: 0; background: rgba(15,23,42,0.42);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.28s;
+        }
+        .product-card-v2:hover .product-overlay { opacity: 1; }
+        .product-overlay-btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 10px 20px; background: #fff; color: #1d4ed8;
+            font-size: 13.5px; font-weight: 800; border-radius: 10px; text-decoration: none;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+            transform: translateY(10px); transition: transform 0.28s;
+        }
+        .product-card-v2:hover .product-overlay-btn { transform: translateY(0); }
+
+        .product-badge {
+            position: absolute; top: 12px; left: 12px;
+            font-size: 11px; font-weight: 800;
+            padding: 4px 10px; border-radius: 99px; text-transform: uppercase;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+        .badge-new { background: #2563eb; color: #fff; }
+        .badge-hot { background: #ef4444; color: #fff; }
+
+        .product-info { padding: 16px 18px; flex-grow: 1; display: flex; flex-direction: column; }
+        .product-category-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe;
+            font-size: 11.5px; font-weight: 700; padding: 3px 10px; border-radius: 99px; margin-bottom: 8px;
+        }
+        .product-name {
+            font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 6px;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            text-decoration: none; line-height: 1.4;
+        }
+        .product-name:hover { color: #2563eb; }
+        .product-rating { color: #f59e0b; font-size: 12px; display: flex; align-items: center; gap: 3px; margin-bottom: 6px; }
+        .product-rating-count { font-size: 11px; color: #94a3b8; margin-left: 4px; }
+        .product-desc {
+            font-size: 13px; color: #64748b; flex-grow: 1; line-height: 1.5;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+            margin-bottom: 14px;
+        }
+        .product-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            padding-top: 12px; border-top: 1px solid #f1f5f9;
+        }
+        .product-price { font-size: 19px; font-weight: 900; color: #2563eb; }
+        .btn-product-detail {
+            display: inline-flex; align-items: center; gap: 5px; padding: 8px 16px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed); color: #fff;
+            font-size: 13px; font-weight: 700; border-radius: 9px; text-decoration: none;
+            transition: all 0.2s; box-shadow: 0 3px 10px rgba(37,99,235,0.28);
+        }
+        .btn-product-detail:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(37,99,235,0.38); color: #fff; }
+
+        /* Empty State */
+        .empty-state { text-align: center; padding: 64px 24px; background: #fff; border-radius: 20px; border: 2px dashed #e2e8f0; }
+
+        /* Pagination */
+        .pagination-custom { display: flex; justify-content: center; gap: 6px; margin-top: 40px; flex-wrap: wrap; }
+        .page-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 9px 16px; border-radius: 10px;
+            font-size: 14px; font-weight: 700;
+            text-decoration: none; transition: all 0.2s;
+            border: 1.5px solid #e2e8f0; background: #fff; color: #475569;
+        }
+        .page-btn:hover { border-color: #2563eb; color: #2563eb; background: #eff6ff; }
+        .page-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+        .page-btn.disabled { opacity: 0.45; pointer-events: none; }
+
+        @media (max-width: 576px) {
+            .pl-header { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
+<div class="container py-4">
 
-    <div class="container py-4">
-
-        <!-- HEADER BANNER -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-            <div>
-                <h3 class="fw-bold text-dark mb-1">
-                    <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Tất Cả Sản Phẩm (/product)
-                </h3>
-                <p class="text-muted small mb-0">Hiển thị tất cả sản phẩm được phân trang <strong>6 sản phẩm / trang</strong> bằng JPA Pagination</p>
-            </div>
-            <div>
-                <span class="badge bg-primary fs-6 px-3 py-2 rounded-3">Tổng số: ${totalProducts} sản phẩm</span>
-            </div>
+    <!-- Page Header -->
+    <div class="pl-header">
+        <div>
+            <h1 class="pl-title"><i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>Tất Cả Sản Phẩm</h1>
+            <p class="pl-sub">Hiển thị <strong>6 sản phẩm / trang</strong> bằng JPA Pagination &bull; OFFSET / LIMIT</p>
         </div>
+        <span class="product-count-badge">
+            <i class="bi bi-box-seam"></i> ${totalProducts} sản phẩm
+        </span>
+    </div>
 
-        <!-- CATEGORY FILTER BUTTONS -->
-        <div class="mb-4 pb-2 border-bottom d-flex gap-2 flex-wrap">
-            <a href="${pageContext.request.contextPath}/product" class="btn ${empty selectedCateId ? 'btn-primary' : 'btn-outline-secondary'} cate-filter-btn">
-                Tất cả
+    <!-- Category Chips Bar -->
+    <div class="category-chip-bar">
+        <a href="${pageContext.request.contextPath}/product"
+           class="cate-chip ${empty selectedCateId ? 'active' : ''}">
+            <i class="bi bi-grid-fill"></i> Tất cả
+        </a>
+        <c:forEach items="${categories}" var="c">
+            <a href="${pageContext.request.contextPath}/product?cateId=${c.categoryId}"
+               class="cate-chip ${selectedCateId == c.categoryId ? 'active' : ''}">
+                <i class="bi bi-tag-fill"></i> ${c.categoryname}
             </a>
-            <c:forEach items="${categories}" var="c">
-                <a href="${pageContext.request.contextPath}/product?cateId=${c.categoryId}" class="btn ${selectedCateId == c.categoryId ? 'btn-primary' : 'btn-outline-secondary'} cate-filter-btn">
-                    ${c.categoryname}
-                </a>
-            </c:forEach>
-        </div>
+        </c:forEach>
+    </div>
 
-        <!-- PRODUCT GRID (6 PRODUCTS PER PAGE) -->
-        <div class="row g-4 mb-5">
-            <c:choose>
-                <c:when test="${not empty productList}">
-                    <c:forEach items="${productList}" var="p">
-                        <div class="col-lg-4 col-md-6">
-                            <div class="product-card">
-                                <a href="${pageContext.request.contextPath}/product/detail?id=${p.productId}" class="text-decoration-none">
-                                    <div class="product-img-wrapper">
+    <!-- Product Grid -->
+    <div class="row g-4 mb-5">
+        <c:choose>
+            <c:when test="${not empty productList}">
+                <c:forEach items="${productList}" var="p" varStatus="loop">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="product-card-v2">
+                            <div class="product-img-box">
+                                <c:choose>
+                                    <c:when test="${loop.index < 2}">
+                                        <span class="product-badge badge-hot">🔥 HOT</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="product-badge badge-new">✨ NEW</span>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <c:choose>
+                                    <c:when test="${not empty p.images}">
                                         <c:choose>
-                                            <c:when test="${not empty p.images}">
-                                                <c:choose>
-                                                    <c:when test="${p.images.startsWith('http')}">
-                                                        <img src="${p.images}" class="product-img" alt="${p.productName}">
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <c:url value="/image?fname=${p.images}" var="pImg"/>
-                                                        <img src="${pImg}" class="product-img" alt="${p.productName}">
-                                                    </c:otherwise>
-                                                </c:choose>
+                                            <c:when test="${p.images.startsWith('http')}">
+                                                <img src="${p.images}" class="product-img-main" alt="${p.productName}">
                                             </c:when>
                                             <c:otherwise>
-                                                <img src="https://via.placeholder.com/300x200?text=No+Image" class="product-img" alt="${p.productName}">
+                                                <c:url value="/image?fname=${p.images}" var="pImg"/>
+                                                <img src="${pImg}" class="product-img-main" alt="${p.productName}">
                                             </c:otherwise>
                                         </c:choose>
-                                    </div>
-                                </a>
-                                <div class="p-4 d-flex flex-column flex-grow-1">
-                                    <span class="badge bg-light text-primary border me-auto mb-2 small">${p.category.categoryname}</span>
-                                    <a href="${pageContext.request.contextPath}/product/detail?id=${p.productId}" class="text-decoration-none text-dark">
-                                        <h5 class="fw-bold text-truncate mb-2" title="${p.productName}">${p.productName}</h5>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <div style="font-size:72px; color:#e2e8f0;">📦</div>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <div class="product-overlay">
+                                    <a href="${pageContext.request.contextPath}/product/detail?id=${p.productId}" class="product-overlay-btn">
+                                        <i class="bi bi-eye-fill"></i> Xem nhanh
                                     </a>
-                                    <p class="text-muted small text-truncate-2 mb-3 flex-grow-1">${p.description}</p>
-                                    <div class="d-flex align-items-center justify-content-between pt-3 border-top">
-                                        <span class="price-text">
-                                            <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="đ"/>
-                                        </span>
-                                        <a href="${pageContext.request.contextPath}/product/detail?id=${p.productId}" class="btn btn-primary rounded-3 fw-bold px-3">
-                                            Xem chi tiết <i class="bi bi-arrow-right-short"></i>
-                                        </a>
-                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-info">
+                                <span class="product-category-tag">
+                                    <i class="bi bi-tag-fill"></i> ${p.category.categoryname}
+                                </span>
+                                <a href="${pageContext.request.contextPath}/product/detail?id=${p.productId}" class="product-name">
+                                    ${p.productName}
+                                </a>
+                                <div class="product-rating">
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                                    <i class="bi bi-star-half"></i>
+                                    <span class="product-rating-count">(${p.productId + 10})</span>
+                                </div>
+                                <p class="product-desc">${p.description}</p>
+                                <div class="product-footer">
+                                    <span class="product-price">
+                                        <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="đ"/>
+                                    </span>
+                                    <a href="${pageContext.request.contextPath}/product/detail?id=${p.productId}" class="btn-product-detail">
+                                        Chi tiết <i class="bi bi-arrow-right-short"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </c:forEach>
-                </c:when>
-                <c:otherwise>
-                    <div class="col-12 text-center py-5">
-                        <i class="bi bi-inbox fs-1 text-muted"></i>
-                        <p class="text-muted mt-2">Không tìm thấy sản phẩm nào ở trang này.</p>
                     </div>
-                </c:otherwise>
-            </c:choose>
-        </div>
-
-        <!-- PAGINATION CONTROLS (6 ITEMS / PAGE) -->
-        <c:if test="${totalPages > 1}">
-            <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    <!-- Previous Page -->
-                    <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
-                        <a class="page-link rounded-3 me-1" href="${pageContext.request.contextPath}/product?page=${currentPage - 1}${not empty selectedCateId ? '&cateId='.concat(selectedCateId) : ''}" aria-label="Previous">
-                            <i class="bi bi-chevron-left"></i> Trang trước
-                        </a>
-                    </li>
-
-                    <!-- Page Numbers -->
-                    <c:forEach begin="1" end="${totalPages}" var="i">
-                        <li class="page-item ${currentPage == i ? 'active' : ''}">
-                            <a class="page-link rounded-3 mx-1 fw-bold" href="${pageContext.request.contextPath}/product?page=${i}${not empty selectedCateId ? '&cateId='.concat(selectedCateId) : ''}">
-                                ${i}
-                            </a>
-                        </li>
-                    </c:forEach>
-
-                    <!-- Next Page -->
-                    <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
-                        <a class="page-link rounded-3 ms-1" href="${pageContext.request.contextPath}/product?page=${currentPage + 1}${not empty selectedCateId ? '&cateId='.concat(selectedCateId) : ''}" aria-label="Next">
-                            Trang sau <i class="bi bi-chevron-right"></i>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-        </c:if>
-
+                </c:forEach>
+            </c:when>
+            <c:otherwise>
+                <div class="col-12">
+                    <div class="empty-state">
+                        <div style="font-size:64px; margin-bottom:16px;">📦</div>
+                        <h3 style="font-size:18px; color:#475569; font-weight:800; margin-bottom:8px;">Không tìm thấy sản phẩm</h3>
+                        <p style="color:#94a3b8; font-size:14px;">Hãy thử chọn danh mục khác hoặc quay lại trang chủ.</p>
+                        <a href="${pageContext.request.contextPath}/product" class="btn btn-primary mt-3">Xem tất cả</a>
+                    </div>
+                </div>
+            </c:otherwise>
+        </c:choose>
     </div>
 
+    <!-- Pagination -->
+    <c:if test="${totalPages > 1}">
+        <div class="pagination-custom">
+            <a href="${pageContext.request.contextPath}/product?page=${currentPage - 1}${not empty selectedCateId ? '&cateId='.concat(selectedCateId) : ''}"
+               class="page-btn ${currentPage <= 1 ? 'disabled' : ''}">
+                <i class="bi bi-chevron-left"></i> Trước
+            </a>
+
+            <c:forEach begin="1" end="${totalPages}" var="i">
+                <a href="${pageContext.request.contextPath}/product?page=${i}${not empty selectedCateId ? '&cateId='.concat(selectedCateId) : ''}"
+                   class="page-btn ${currentPage == i ? 'active' : ''}">
+                    ${i}
+                </a>
+            </c:forEach>
+
+            <a href="${pageContext.request.contextPath}/product?page=${currentPage + 1}${not empty selectedCateId ? '&cateId='.concat(selectedCateId) : ''}"
+               class="page-btn ${currentPage >= totalPages ? 'disabled' : ''}">
+                Sau <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+        <p style="text-align:center; font-size:13px; color:#94a3b8; margin-top:12px;">
+            Trang <strong>${currentPage}</strong> / ${totalPages} &bull; Tổng ${totalProducts} sản phẩm
+        </p>
+    </c:if>
+
+</div>
 </body>
 </html>
