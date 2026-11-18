@@ -177,9 +177,10 @@
         <h1 class="form-heading">Tạo tài khoản mới 🎉</h1>
         <p class="form-subheading">Điền đầy đủ thông tin để bắt đầu mua sắm ngay hôm nay!</p>
 
-        <c:if test="${not empty error}">
+        <c:set var="regErr" value="${not empty error ? error : alert}"/>
+        <c:if test="${not empty regErr}">
             <div class="auth-alert auth-alert-danger">
-                <i class="bi bi-exclamation-circle-fill"></i> ${error}
+                <i class="bi bi-exclamation-circle-fill"></i> <c:out value="${regErr}"/>
             </div>
         </c:if>
 
@@ -302,19 +303,19 @@
             <ul class="benefit-list">
                 <li>
                     <div class="benefit-check"><i class="bi bi-check-lg"></i></div>
-                    Truy cập đầy đủ danh sách sản phẩm với bộ lọc và phân trang
+                    Khám phá đầy đủ danh sách sản phẩm với bộ lọc thông minh
                 </li>
                 <li>
                     <div class="benefit-check"><i class="bi bi-check-lg"></i></div>
-                    Quản lý hồ sơ cá nhân và ảnh đại diện qua Multipart Upload
+                    Quản lý thông tin hồ sơ và ảnh đại diện cá nhân dễ dàng
                 </li>
                 <li>
                     <div class="benefit-check"><i class="bi bi-check-lg"></i></div>
-                    Khôi phục mật khẩu qua email với mã OTP 6 chữ số bảo mật
+                    Bảo mật tài khoản với mã xác thực OTP gửi qua email
                 </li>
                 <li>
                     <div class="benefit-check"><i class="bi bi-check-lg"></i></div>
-                    Cookie "Remember Me" giúp tự động đăng nhập lần sau
+                    Ghi nhớ đăng nhập an toàn, tiện lợi cho những lần sau
                 </li>
             </ul>
         </div>

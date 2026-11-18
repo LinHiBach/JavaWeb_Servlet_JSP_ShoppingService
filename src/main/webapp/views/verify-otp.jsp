@@ -156,24 +156,28 @@
 
         <h1 class="otp-title">Xác Thực Email OTP</h1>
         <p class="otp-subtitle">
-            Mã OTP gồm <strong>6 chữ số</strong> đã được gửi đến email của bạn.<br>
+            Mã OTP gồm <strong>6 chữ số</strong> đã được gửi đến email
+            <c:if test="${not empty email}"><br><strong><c:out value="${email}"/></strong></c:if><br>
             Vui lòng kiểm tra hộp thư và nhập mã xác thực bên dưới.
         </p>
 
         <!-- Alerts -->
-        <c:if test="${not empty error}">
+        <c:set var="errText" value="${not empty error ? error : alert}"/>
+        <c:set var="msgText" value="${not empty message ? message : successAlert}"/>
+        <c:if test="${not empty errText}">
             <div class="auth-alert auth-alert-danger">
-                <i class="bi bi-exclamation-circle-fill"></i> ${error}
+                <i class="bi bi-exclamation-circle-fill"></i> <c:out value="${errText}"/>
             </div>
         </c:if>
-        <c:if test="${not empty message}">
+        <c:if test="${not empty msgText}">
             <div class="auth-alert auth-alert-success">
-                <i class="bi bi-check-circle-fill"></i> ${message}
+                <i class="bi bi-check-circle-fill"></i> <c:out value="${msgText}"/>
             </div>
         </c:if>
 
         <!-- OTP Form -->
         <form action="${pageContext.request.contextPath}/verify-otp" method="post" id="otpForm" novalidate>
+            <input type="hidden" name="email" value="<c:out value='${email}'/>">
             <!-- Hidden input that carries the final 6-digit OTP -->
             <input type="hidden" name="otp" id="otpHidden">
 
@@ -196,10 +200,15 @@
                     <i class="bi bi-arrow-left"></i> Quay lại đăng ký
                 </a>
             </p>
+        </form>
 
-            <p class="resend-timer" id="resendInfo">
-                Không nhận được mã? Kiểm tra mục Spam hoặc <a href="${pageContext.request.contextPath}/register" style="color:#7c3aed;font-weight:700;">Đăng ký lại</a>
-            </p>
+        <form action="${pageContext.request.contextPath}/verify-otp" method="post" class="resend-timer" id="resendForm">
+            <input type="hidden" name="email" value="<c:out value='${email}'/>">
+            <input type="hidden" name="action" value="resend">
+            Không nhận được mã? Kiểm tra mục Spam hoặc
+            <button type="submit" style="background:none;border:none;color:#7c3aed;font-weight:700;cursor:pointer;padding:0;text-decoration:underline;">
+                Gửi lại mã OTP
+            </button>
         </form>
     </div>
 

@@ -436,19 +436,21 @@
             <p class="form-subheading">Đăng nhập để tiếp tục trải nghiệm mua sắm của bạn.</p>
 
             <!-- Alerts -->
-            <c:if test="${not empty error}">
+            <c:set var="loginErr" value="${not empty error ? error : alert}"/>
+            <c:set var="loginMsg" value="${not empty message ? message : successAlert}"/>
+            <c:if test="${not empty loginErr}">
                 <div class="auth-alert auth-alert-danger">
-                    <i class="bi bi-exclamation-circle-fill"></i> ${error}
+                    <i class="bi bi-exclamation-circle-fill"></i> <c:out value="${loginErr}"/>
                 </div>
             </c:if>
-            <c:if test="${not empty message}">
+            <c:if test="${not empty loginMsg}">
                 <div class="auth-alert auth-alert-success">
-                    <i class="bi bi-check-circle-fill"></i> ${message}
+                    <i class="bi bi-check-circle-fill"></i> <c:out value="${loginMsg}"/>
                 </div>
             </c:if>
             <c:if test="${not empty info}">
                 <div class="auth-alert auth-alert-info">
-                    <i class="bi bi-info-circle-fill"></i> ${info}
+                    <i class="bi bi-info-circle-fill"></i> <c:out value="${info}"/>
                 </div>
             </c:if>
 
@@ -461,12 +463,12 @@
                     <div class="input-wrapper">
                         <i class="bi bi-person-fill input-icon"></i>
                         <input type="text" id="loginUsername" name="username"
-                               value="${username}"
+                               value="<c:out value='${username}'/>"
                                class="input-custom ${not empty errors.username ? 'is-invalid' : ''}"
                                placeholder="Nhập tên đăng nhập..." required autofocus>
                     </div>
                     <c:if test="${not empty errors.username}">
-                        <div class="invalid-msg"><i class="bi bi-x-circle-fill"></i> ${errors.username}</div>
+                        <div class="invalid-msg"><i class="bi bi-x-circle-fill"></i> <c:out value="${errors.username}"/></div>
                     </c:if>
                 </div>
 
@@ -483,14 +485,14 @@
                         </button>
                     </div>
                     <c:if test="${not empty errors.password}">
-                        <div class="invalid-msg"><i class="bi bi-x-circle-fill"></i> ${errors.password}</div>
+                        <div class="invalid-msg"><i class="bi bi-x-circle-fill"></i> <c:out value="${errors.password}"/></div>
                     </c:if>
                 </div>
 
                 <!-- Remember + Forgot -->
                 <div class="remember-row">
                     <label class="remember-label">
-                        <input type="checkbox" name="remember" value="true"> Ghi nhớ đăng nhập
+                        <input type="checkbox" name="remember" value="true" ${isRemember ? 'checked' : ''}> Ghi nhớ đăng nhập
                     </label>
                     <a href="${pageContext.request.contextPath}/forgot-password" class="forgot-link">Quên mật khẩu?</a>
                 </div>
@@ -517,12 +519,12 @@
             <!-- Floating product-like cards -->
             <div class="floating-cards">
                 <div class="float-card float-card-1">
-                    🛍️ Sản phẩm mới hôm nay
-                    <br><small style="opacity:0.7;">Cập nhật liên tục từ CSDL JPA</small>
+                    🛍️ Sản phẩm mới mỗi ngày
+                    <br><small style="opacity:0.7;">Hàng trăm mẫu mã cập nhật liên tục</small>
                 </div>
                 <div class="float-card float-card-2">
-                    🔒 Bảo mật tài khoản
-                    <br><small style="opacity:0.7;">Mã hóa BCrypt + Session</small>
+                    🔒 Mua sắm an tâm
+                    <br><small style="opacity:0.7;">Bảo mật thông tin tối đa</small>
                 </div>
             </div>
 
@@ -531,26 +533,26 @@
                 <div class="brand-panel-logo">
                     <i class="bi bi-bag-heart-fill"></i>
                 </div>
-                <h2 class="brand-panel-title">Shopping Store MVC</h2>
+                <h2 class="brand-panel-title">Shopping Store</h2>
                 <p class="brand-panel-subtitle">
-                    Nền tảng thương mại điện tử được xây dựng theo kiến trúc Three-Tier chuẩn doanh nghiệp với Java Servlet & JPA/Hibernate.
+                    Hệ thống mua sắm giày đá bóng &amp; phụ kiện thể thao chính hãng, uy tín hàng đầu.
                 </p>
                 <ul class="feature-list">
                     <li>
-                        <div class="feat-icon"><i class="bi bi-layers-fill"></i></div>
-                        Kiến trúc Three-Tier (Entity → DAO → Service → Controller → View)
+                        <div class="feat-icon"><i class="bi bi-shield-check"></i></div>
+                        Cam kết 100% sản phẩm chính hãng, xuất xứ rõ ràng
                     </li>
                     <li>
-                        <div class="feat-icon"><i class="bi bi-database-fill"></i></div>
-                        JPA / Hibernate ORM + SQL Server Database
+                        <div class="feat-icon"><i class="bi bi-truck"></i></div>
+                        Giao hàng hỏa tốc trên toàn quốc, kiểm tra trước khi nhận
                     </li>
                     <li>
-                        <div class="feat-icon"><i class="bi bi-layout-split"></i></div>
-                        SiteMesh 3 Decorator với Bootstrap 5 Template
+                        <div class="feat-icon"><i class="bi bi-arrow-repeat"></i></div>
+                        Chính sách đổi trả, đổi size linh hoạt trong 7 ngày
                     </li>
                     <li>
-                        <div class="feat-icon"><i class="bi bi-shield-lock-fill"></i></div>
-                        Bảo mật BCrypt Hash + Session + Cookie "Remember Me"
+                        <div class="feat-icon"><i class="bi bi-headset"></i></div>
+                        Đội ngũ tư vấn thể thao chuyên nghiệp, hỗ trợ 24/7
                     </li>
                 </ul>
             </div>

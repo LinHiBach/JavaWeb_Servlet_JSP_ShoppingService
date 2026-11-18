@@ -1,6 +1,8 @@
 package vn.hcmute.controllers;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -41,19 +43,27 @@ public class RegisterController extends HttpServlet {
 
         String username = req.getParameter("username");
         String password = req.getParameter("password");
+        String repassword = req.getParameter("repassword");
         String email = req.getParameter("email");
         String fullname = req.getParameter("fullname");
         String phone = req.getParameter("phone");
 
-        // Preserve input values
+        // Giữ lại thông tin đã nhập trên form khi có lỗi
         req.setAttribute("username", username != null ? username.trim() : "");
         req.setAttribute("email", email != null ? email.trim() : "");
         req.setAttribute("fullname", fullname != null ? fullname.trim() : "");
         req.setAttribute("phone", phone != null ? phone.trim() : "");
 
-        java.util.Map<String, String> errors = new java.util.HashMap<>();
+        Map<String, String> errors = new HashMap<>();
 
-        // 1. Validate Username
+        // 1. Validate Fullname (bắt buộc trong DB)
+        if (fullname == null || fullname.trim().isEmpty()) {
+            errors.put("fullname", "Họ và tên không được để trống!");
+        } else if (fullname.trim().length() < 2 || fullname.trim().length() > 100) {
+            errors.put("fullname", "Họ và tên phải từ 2 đến 100 ký tự!");
+        }
+
+        // 2. Validate Username
         if (username == null || username.trim().isEmpty()) {
             errors.put("username", "Tên tài khoản không được để trống!");
         } else {
@@ -67,7 +77,7 @@ public class RegisterController extends HttpServlet {
             }
         }
 
-        // 2. Validate Email
+        // 3. Validate Email
         if (email == null || email.trim().isEmpty()) {
             errors.put("email", "Địa chỉ email không được để trống!");
         } else {
@@ -79,19 +89,22 @@ public class RegisterController extends HttpServlet {
             }
         }
 
-        // 3. Validate Password
+        // 4. Validate Password & Confirm Password
         if (password == null || password.trim().isEmpty()) {
             errors.put("password", "Mật khẩu không được để trống!");
         } else if (password.length() < 6) {
             errors.put("password", "Mật khẩu phải có độ dài tối thiểu 6 ký tự!");
         }
 
-        // 4. Validate Fullname
-        if (fullname != null && fullname.trim().length() > 100) {
-            errors.put("fullname", "Họ và tên không được vượt quá 100 ký tự!");
+        if (repassword != null || req.getParameterMap().containsKey("repassword")) {
+            if (repassword == null || repassword.isEmpty()) {
+                errors.put("repassword", "Vui lòng nhập lại mật khẩu xác nhận!");
+            } else if (password != null && !password.equals(repassword)) {
+                errors.put("repassword", "Mật khẩu xác nhận không khớp!");
+            }
         }
 
-        // 5. Validate Phone (optional but must be valid if provided)
+        // 5. Validate Phone (tùy chọn nhưng nếu nhập phải hợp lệ)
         if (phone != null && !phone.trim().isEmpty()) {
             String p = phone.trim();
             if (!p.matches("^0[0-9]{9}$")) {
@@ -101,25 +114,31 @@ public class RegisterController extends HttpServlet {
             }
         }
 
-        // If there are validation errors, return to form with feedback
         if (!errors.isEmpty()) {
+            String errMsg = "Vui lòng kiểm tra và sửa các thông tin chưa hợp lệ!";
             req.setAttribute("errors", errors);
-            req.setAttribute("alert", "Vui lòng kiểm tra và sửa các thông tin chưa hợp lệ!");
+            req.setAttribute("error", errMsg);
+            req.setAttribute("alert", errMsg);
             req.getRequestDispatcher(Constant.Path.REGISTER).forward(req, resp);
             return;
         }
 
-        boolean isSuccess = service.register(username.trim(), password, email.trim(), fullname != null ? fullname.trim() : "", phone != null ? phone.trim() : "");
+        boolean isSuccess = service.register(
+                username.trim(),
+                password,
+                email.trim(),
+                fullname.trim(),
+                (phone != null && !phone.trim().isEmpty()) ? phone.trim() : null
+        );
         if (isSuccess) {
-            User newUser = service.findByEmail(email.trim());
             HttpSession session = req.getSession(true);
             session.setAttribute("pendingEmail", email.trim());
-            if (newUser != null) {
-                session.setAttribute("latestOtp", newUser.getCode());
-            }
+            session.setAttribute("pendingSuccess", "Đăng ký thành công! Vui lòng nhập mã OTP 6 số gửi tới email của bạn.");
             resp.sendRedirect(req.getContextPath() + "/verify-otp");
         } else {
-            req.setAttribute("alert", "Lỗi hệ thống! Không thể hoàn tất đăng ký lúc này.");
+            String errMsg = "Lỗi hệ thống! Không thể hoàn tất đăng ký lúc này.";
+            req.setAttribute("error", errMsg);
+            req.setAttribute("alert", errMsg);
             req.getRequestDispatcher(Constant.Path.REGISTER).forward(req, resp);
         }
     }

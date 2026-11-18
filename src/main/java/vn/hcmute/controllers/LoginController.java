@@ -13,6 +13,7 @@ import vn.hcmute.services.IUserService;
 import vn.hcmute.services.impl.UserServiceImpl;
 import vn.hcmute.utils.Constant;
 import vn.hcmute.utils.CookieUtils;
+import vn.hcmute.utils.EmailUtils;
 
 @WebServlet(urlPatterns = "/login")
 public class LoginController extends HttpServlet {
@@ -44,11 +45,17 @@ public class LoginController extends HttpServlet {
         String resetSuccess = req.getParameter("resetSuccess");
 
         if ("1".equals(activated)) {
-            req.setAttribute("successAlert", "Kích hoạt tài khoản thành công! Bạn có thể đăng nhập ngay.");
+            String msg = "Kích hoạt tài khoản thành công! Bạn có thể đăng nhập ngay.";
+            req.setAttribute("message", msg);
+            req.setAttribute("successAlert", msg);
         } else if ("1".equals(resetSuccess)) {
-            req.setAttribute("successAlert", "Đặt lại mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới.");
+            String msg = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới.";
+            req.setAttribute("message", msg);
+            req.setAttribute("successAlert", msg);
         } else if ("1".equals(registered)) {
-            req.setAttribute("successAlert", "Đăng ký tài khoản thành công! Vui lòng kiểm tra email nhập mã OTP kích hoạt.");
+            String msg = "Đăng ký tài khoản thành công! Vui lòng kiểm tra email nhập mã OTP kích hoạt.";
+            req.setAttribute("message", msg);
+            req.setAttribute("successAlert", msg);
         }
 
         req.getRequestDispatcher(Constant.Path.LOGIN).forward(req, resp);
@@ -66,8 +73,10 @@ public class LoginController extends HttpServlet {
         boolean isRememberMe = "on".equals(remember) || "true".equals(remember);
 
         if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
-            req.setAttribute("alert", "Tài khoản hoặc mật khẩu không được để trống!");
-            req.setAttribute("username", username);
+            String err = "Tài khoản hoặc mật khẩu không được để trống!";
+            req.setAttribute("error", err);
+            req.setAttribute("alert", err);
+            req.setAttribute("username", username != null ? username.trim() : "");
             req.setAttribute("isRemember", isRememberMe);
             req.getRequestDispatcher(Constant.Path.LOGIN).forward(req, resp);
             return;
@@ -77,28 +86,40 @@ public class LoginController extends HttpServlet {
         if (user != null) {
             // Kiểm tra trạng thái kích hoạt tài khoản OTP (0: Chưa kích hoạt, 1: Đã kích hoạt)
             if (user.getStatus() == 0) {
+                if (user.getCode() == null || user.getCode().trim().isEmpty()) {
+                    String newOtp = EmailUtils.generateOtp();
+                    user.setCode(newOtp);
+                    service.update(user);
+                    EmailUtils.sendOtpEmail(user.getEmail(), newOtp, "register");
+                }
                 HttpSession session = req.getSession(true);
                 session.setAttribute("pendingEmail", user.getEmail());
-                req.setAttribute("alert", "Tài khoản của bạn chưa được kích hoạt OTP! Vui lòng nhập mã OTP gửi tới email.");
+                session.setAttribute("pendingAlert", "Tài khoản của bạn chưa được kích hoạt OTP! Vui lòng nhập mã OTP gửi tới email.");
                 resp.sendRedirect(req.getContextPath() + "/verify-otp");
                 return;
             }
 
-            // Lưu thông tin người dùng vào Session
+            // Đổi Session ID khi đăng nhập thành công để chống Session Fixation
+            HttpSession oldSession = req.getSession(false);
+            if (oldSession != null) {
+                oldSession.invalidate();
+            }
             HttpSession session = req.getSession(true);
             session.setAttribute("account", user);
 
             // Xử lý Cookie Remember Me
             if (isRememberMe) {
-                CookieUtils.add(resp, Constant.COOKIE_REMEMBER, username.trim(), 24 * 60 * 60);
+                CookieUtils.add(resp, Constant.COOKIE_REMEMBER, username.trim(), 7 * 24 * 60 * 60);
             } else {
                 CookieUtils.delete(resp, Constant.COOKIE_REMEMBER);
             }
 
             resp.sendRedirect(req.getContextPath() + "/waiting");
         } else {
-            req.setAttribute("alert", "Tài khoản hoặc mật khẩu không đúng!");
-            req.setAttribute("username", username);
+            String err = "Tài khoản hoặc mật khẩu không đúng!";
+            req.setAttribute("error", err);
+            req.setAttribute("alert", err);
+            req.setAttribute("username", username.trim());
             req.setAttribute("isRemember", isRememberMe);
             req.getRequestDispatcher(Constant.Path.LOGIN).forward(req, resp);
         }
