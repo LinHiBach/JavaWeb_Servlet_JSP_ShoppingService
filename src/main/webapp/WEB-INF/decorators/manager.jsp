@@ -95,7 +95,7 @@
     <!-- FOOTER -->
     <footer class="bg-white border-top py-3 text-center text-muted small mt-auto">
         <div class="container">
-            © 2026 Manager Portal - SiteMesh Decorator Layout
+            © 2026 Manager Portal. Tất cả các quyền được bảo lưu.
         </div>
     </footer>
 

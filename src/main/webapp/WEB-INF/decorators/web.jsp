@@ -14,8 +14,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- SiteMesh 3 Head Injection -->
-    <sitemesh:write property="head"/>
 
     <style>
         /* ============================================
@@ -552,7 +550,7 @@
             .mobile-nav-drawer { display: none !important; }
         }
     </style>
-    <c:out value="${requestScope.head}" escapeXml="false"/>
+    <sitemesh:write property="head"/>
 </head>
 <body>
 
@@ -718,14 +716,12 @@
                         <span class="footer-logo-text">Shopping Store</span>
                     </div>
                     <p class="footer-desc">
-                        Hệ thống quản lý thương mại điện tử được xây dựng theo kiến trúc Three-Tier chuẩn doanh nghiệp sử dụng Java Servlet, JPA/Hibernate ORM và SiteMesh Decorator 3.
+                        Cửa hàng thể thao trực tuyến uy tín hàng đầu, chuyên cung cấp các dòng giày đá bóng, trang phục thi đấu và phụ kiện thể thao chính hãng.
                     </p>
                     <div class="footer-tech-badges">
-                        <span class="tech-badge">Java 17</span>
-                        <span class="tech-badge">Servlet 6.0</span>
-                        <span class="tech-badge">JPA/Hibernate</span>
-                        <span class="tech-badge">SiteMesh 3</span>
-                        <span class="tech-badge">Bootstrap 5</span>
+                        <span class="tech-badge"><i class="bi bi-shield-check me-1"></i>Chính hãng 100%</span>
+                        <span class="tech-badge"><i class="bi bi-truck me-1"></i>Giao hàng nhanh</span>
+                        <span class="tech-badge"><i class="bi bi-arrow-repeat me-1"></i>Đổi trả 7 ngày</span>
                     </div>
                 </div>
 
@@ -761,24 +757,24 @@
                     </ul>
                 </div>
 
-                <!-- Column 3: System Info -->
+                <!-- Column 3: Customer Care & Policies -->
                 <div class="footer-info-col">
-                    <p class="footer-nav-title">Thông tin hệ thống</p>
+                    <p class="footer-nav-title">Chính sách & Hỗ trợ</p>
                     <div class="footer-info-item">
-                        <i class="bi bi-cpu-fill"></i>
-                        <span>Jakarta Servlet 6.0 / Tomcat 10+</span>
+                        <i class="bi bi-shield-check"></i>
+                        <span>Cam kết chính hãng<br>Đảm bảo nguồn gốc 100%</span>
                     </div>
                     <div class="footer-info-item">
-                        <i class="bi bi-database-fill"></i>
-                        <span>Microsoft SQL Server<br>JPA (Hibernate ORM 6.x)</span>
+                        <i class="bi bi-truck"></i>
+                        <span>Giao hàng toàn quốc<br>Nhận hàng kiểm tra thanh toán</span>
                     </div>
                     <div class="footer-info-item">
-                        <i class="bi bi-layers-fill"></i>
-                        <span>Three-Tier Architecture<br>MVC Pattern</span>
+                        <i class="bi bi-arrow-repeat"></i>
+                        <span>Đổi trả linh hoạt<br>Hỗ trợ đổi size trong 7 ngày</span>
                     </div>
                     <div class="footer-info-item">
-                        <i class="bi bi-palette-fill"></i>
-                        <span>SiteMesh 3 Decorator<br>Bootstrap 5.3 + Jakarta EE</span>
+                        <i class="bi bi-headset"></i>
+                        <span>Tư vấn tận tâm<br>Hỗ trợ khách hàng 24/7</span>
                     </div>
                 </div>
             </div>
@@ -788,11 +784,11 @@
         <div class="footer-bottom">
             <div class="footer-bottom-inner">
                 <p class="footer-copyright">
-                    © 2026 <strong>Shopping Store MVC JPA</strong>. Bài tập thực hành Java Web.
+                    © 2026 <strong>Shopping Store</strong>. Nền tảng mua sắm thể thao trực tuyến.
                 </p>
                 <div class="footer-status-badge">
                     <div class="status-dot"></div>
-                    System Online
+                    Phục vụ 24/7
                 </div>
             </div>
         </div>

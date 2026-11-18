@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 
-@WebFilter(urlPatterns = "/*")
+@WebFilter(filterName = "sitemesh", urlPatterns = "/*")
 public class SiteMeshFilter implements Filter {
 
     @Override
@@ -41,15 +41,19 @@ public class SiteMeshFilter implements Filter {
         String contextPath = req.getContextPath();
         String path = uri.substring(contextPath.length());
 
-        // Skip static resources, images, assets, and uploads
+        // Bỏ qua các tài nguyên tĩnh và image servlet
+        String lowerPath = path.toLowerCase();
         if (path.startsWith("/image") || path.startsWith("/assets") || path.startsWith("/static") || path.startsWith("/upload")
-                || path.endsWith(".css") || path.endsWith(".js") || path.endsWith(".png") || path.endsWith(".jpg")
-                || path.endsWith(".jpeg") || path.endsWith(".gif") || path.endsWith(".ico") || path.endsWith(".woff2")) {
+                || lowerPath.endsWith(".css") || lowerPath.endsWith(".js") || lowerPath.endsWith(".png")
+                || lowerPath.endsWith(".jpg") || lowerPath.endsWith(".jpeg") || lowerPath.endsWith(".gif")
+                || lowerPath.endsWith(".webp") || lowerPath.endsWith(".svg") || lowerPath.endsWith(".ico")
+                || lowerPath.endsWith(".woff") || lowerPath.endsWith(".woff2") || lowerPath.endsWith(".ttf")
+                || lowerPath.endsWith(".map")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Avoid re-decorating decorator JSPs directly
+        // Tránh bọc lặp lại chính các file decorator JSP
         if (path.startsWith("/WEB-INF/decorators")) {
             chain.doFilter(request, response);
             return;
@@ -57,7 +61,7 @@ public class SiteMeshFilter implements Filter {
 
         String decoratorPath = getDecoratorPath(path);
 
-        // If no decorator is mapped for this URL (e.g. /login, /register, /, /waiting), pass directly through filter chain
+        // Các trang không áp dụng layout (login, register, otp, logout, waiting...) đi thẳng qua chain
         if (decoratorPath == null) {
             chain.doFilter(request, response);
             return;
@@ -68,7 +72,7 @@ public class SiteMeshFilter implements Filter {
 
         chain.doFilter(wrappedRequest, responseWrapper);
 
-        // If response was redirected or errored, stop
+        // Nếu response đã redirect hoặc báo lỗi HTTP thì dừng
         if (responseWrapper.isRedirectedOrError() || resp.isCommitted()) {
             return;
         }
@@ -76,100 +80,50 @@ public class SiteMeshFilter implements Filter {
         String contentType = responseWrapper.getContentType();
         String capturedText = responseWrapper.toString();
 
-        if (capturedText != null && !capturedText.trim().isEmpty() 
+        if (capturedText != null && !capturedText.trim().isEmpty()
                 && (contentType == null || contentType.contains("text/html"))) {
 
-            // Extract title, head, and body from target page
             String title = extractPattern(capturedText, "<title>(.*?)</title>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
-            String head = extractPattern(capturedText, "<head>(.*?)</head>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+            String head = extractPattern(capturedText, "<head[^>]*>(.*?)</head>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
             String rawBody = extractPattern(capturedText, "<body[^>]*>(.*?)</body>", Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
             String body = (rawBody != null && !rawBody.trim().isEmpty()) ? rawBody : capturedText;
 
-            // Extract inner main content for admin pages to avoid duplicating topbar/sidebar
-            if (path.startsWith("/admin")) {
-                int mcIdx = body.indexOf("class=\"main-content\"");
-                if (mcIdx == -1) mcIdx = body.indexOf("class='main-content'");
-                if (mcIdx != -1) {
-                    int contentStart = body.indexOf(">", mcIdx);
-                    if (contentStart != -1) {
-                        String inner = body.substring(contentStart + 1);
-                        int scriptIdx = inner.lastIndexOf("<script");
-                        if (scriptIdx != -1) {
-                            inner = inner.substring(0, scriptIdx);
-                        }
-                        int lastDiv = inner.lastIndexOf("</div>");
-                        if (lastDiv != -1) {
-                            inner = inner.substring(0, lastDiv);
-                        }
-                        if (inner != null && !inner.trim().isEmpty()) {
-                            body = inner.trim();
-                        }
-                    }
-                }
-            } else if (path.startsWith("/home")) {
-                int topbarEnd = body.indexOf("class=\"topbar-user\"");
-                if (topbarEnd != -1) {
-                    int containerIdx = body.indexOf("<div class=\"container", topbarEnd);
-                    if (containerIdx != -1) {
-                        String inner = body.substring(containerIdx);
-                        int scriptIdx = inner.lastIndexOf("<script");
-                        if (scriptIdx != -1) {
-                            inner = inner.substring(0, scriptIdx);
-                        }
-                        if (inner != null && !inner.trim().isEmpty()) {
-                            body = inner.trim();
-                        }
-                    }
-                }
-            } else if (path.startsWith("/manager")) {
-                int navEnd = body.indexOf("class=\"navbar");
-                if (navEnd != -1) {
-                    int containerIdx = body.indexOf("<div class=\"container", navEnd);
-                    if (containerIdx != -1) {
-                        String inner = body.substring(containerIdx);
-                        int scriptIdx = inner.lastIndexOf("<script");
-                        if (scriptIdx != -1) {
-                            inner = inner.substring(0, scriptIdx);
-                        }
-                        if (inner != null && !inner.trim().isEmpty()) {
-                            body = inner.trim();
-                        }
-                    }
-                }
+            if (head != null) {
+                head = head.replaceAll("(?is)<title>.*?</title>", "")
+                           .replaceAll("(?is)<meta\\s+charset=[^>]*>", "")
+                           .replaceAll("(?is)<meta\\s+name=[\"']viewport[\"'][^>]*>", "")
+                           .trim();
             }
 
-            if (head != null && title != null) {
-                head = head.replaceAll("(?i)<title>.*?</title>", "");
-            }
+            String safeTitle = title != null ? title : "Shopping Store";
+            String safeHead = head != null ? head : "";
 
-            req.setAttribute("title", title != null ? title : "Shopping Service");
-            req.setAttribute("head", head != null ? head : "");
+            req.setAttribute("title", safeTitle);
+            req.setAttribute("head", safeHead);
             req.setAttribute("body", body);
 
-            req.setAttribute("sitemesh.title", title != null ? title : "Shopping Service");
-            req.setAttribute("sitemesh.head", head != null ? head : "");
+            req.setAttribute("sitemesh.title", safeTitle);
+            req.setAttribute("sitemesh.head", safeHead);
             req.setAttribute("sitemesh.body", body);
 
-            // Include decorator JSP to render decorator template HTML
             CharResponseWrapper decoratorWrapper = new CharResponseWrapper(resp);
             try {
                 req.getRequestDispatcher(decoratorPath).include(req, decoratorWrapper);
                 String decoratedContent = decoratorWrapper.toString();
 
                 if (decoratedContent != null && !decoratedContent.trim().isEmpty()) {
-                    // Fallback string replacement for custom sitemesh tags
                     decoratedContent = decoratedContent
                             .replace("<sitemesh:write property=\"body\"/>", body)
                             .replace("<sitemesh:write property='body'/>", body)
                             .replace("<decorator:body/>", body)
                             .replace("${sitemesh.body}", body)
-                            .replace("<sitemesh:write property=\"title\"/>", title != null ? title : "")
-                            .replace("<sitemesh:write property='title'/>", title != null ? title : "")
-                            .replace("<decorator:title/>", title != null ? title : "")
-                            .replace("<sitemesh:write property=\"head\"/>", head != null ? head : "")
-                            .replace("<sitemesh:write property='head'/>", head != null ? head : "")
-                            .replace("<decorator:head/>", head != null ? head : "");
+                            .replace("<sitemesh:write property=\"title\"/>", safeTitle)
+                            .replace("<sitemesh:write property='title'/>", safeTitle)
+                            .replace("<decorator:title/>", safeTitle)
+                            .replace("<sitemesh:write property=\"head\"/>", safeHead)
+                            .replace("<sitemesh:write property='head'/>", safeHead)
+                            .replace("<decorator:head/>", safeHead);
 
                     resp.setContentType("text/html;charset=UTF-8");
                     PrintWriter out = resp.getWriter();
@@ -182,7 +136,6 @@ public class SiteMeshFilter implements Filter {
             }
         }
 
-        // Fallback: Write captured text directly using Writer
         resp.setContentType("text/html;charset=UTF-8");
         PrintWriter out = resp.getWriter();
         out.write(capturedText != null ? capturedText : "");
@@ -197,8 +150,8 @@ public class SiteMeshFilter implements Filter {
             return "/WEB-INF/decorators/admin.jsp";
         } else if (path.startsWith("/manager")) {
             return "/WEB-INF/decorators/manager.jsp";
-        } else if (path.startsWith("/login") || path.startsWith("/register") || path.startsWith("/waiting") 
-                || path.startsWith("/logout") || path.startsWith("/forgot-password") 
+        } else if (path.startsWith("/login") || path.startsWith("/register") || path.startsWith("/waiting")
+                || path.startsWith("/logout") || path.startsWith("/forgot-password")
                 || path.startsWith("/reset-password") || path.startsWith("/verify-otp")) {
             return null;
         } else {
@@ -276,7 +229,7 @@ public class SiteMeshFilter implements Filter {
         @Override
         public void sendError(int sc, String msg) throws IOException {
             this.redirectedOrError = true;
-            super.sendError(sc);
+            super.sendError(sc, msg);
         }
 
         @Override

@@ -109,22 +109,6 @@
 </head>
 <body>
 
-    <!-- TOPBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-manager">
-        <div class="container">
-            <a class="navbar-brand fw-bold fs-4 d-flex align-items-center gap-2" href="${pageContext.request.contextPath}/manager/home">
-                <i class="bi bi-briefcase-fill"></i> Manager Portal
-            </a>
-            <div class="d-flex align-items-center gap-3 text-white">
-                <span class="small">Xin chào, <strong>${sessionScope.account.fullname}</strong></span>
-                <span class="badge bg-warning text-dark px-3 py-2 fw-bold">Role: Manager</span>
-                <a href="${pageContext.request.contextPath}/logout" class="btn-topbar-logout">
-                    <i class="bi bi-box-arrow-right"></i> Đăng xuất
-                </a>
-            </div>
-        </div>
-    </nav>
-
     <!-- MAIN CONTENT -->
     <div class="container py-5">
         <div class="row justify-content-center">

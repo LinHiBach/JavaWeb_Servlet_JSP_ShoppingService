@@ -8,8 +8,26 @@ USE ShoppingServiceMVC;
 GO
 
 /* =========================================================
-   1. BỔ SUNG COLUMNS CODE + STATUS CHO BẢNG USER
+   1. TẠO HOẶC CẬP NHẬT BẢNG USER & TÀI KHOẢN MẪU
    ========================================================= */
+
+IF OBJECT_ID('dbo.[User]', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.[User] (
+        [id] INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+        [username] VARCHAR(50) NOT NULL UNIQUE,
+        [email] VARCHAR(255) NOT NULL UNIQUE,
+        [fullname] NVARCHAR(255) NOT NULL,
+        [password] VARCHAR(255) NOT NULL,
+        [avatar] NVARCHAR(500) NULL,
+        [roleid] INT NOT NULL DEFAULT 3,
+        [phone] VARCHAR(20) NULL,
+        [createdDate] DATE NULL DEFAULT CAST(GETDATE() AS DATE),
+        [code] VARCHAR(10) NULL,
+        [status] INT NOT NULL DEFAULT 1
+    );
+END;
+GO
 
 IF NOT EXISTS (
     SELECT 1
@@ -38,7 +56,22 @@ GO
 -- User cũ mặc định đã kích hoạt
 UPDATE dbo.[User]
 SET [status] = 1
-WHERE [status] IS NULL OR [status] = 0;
+WHERE [status] IS NULL;
+GO
+
+-- Khởi tạo tài khoản mẫu Admin & Manager (Mật khẩu mặc định: 123 - đã mã hóa BCrypt)
+IF NOT EXISTS (SELECT 1 FROM dbo.[User] WHERE [username] = 'admin')
+BEGIN
+    INSERT INTO dbo.[User] ([username], [email], [fullname], [password], [roleid], [phone], [createdDate], [status])
+    VALUES ('admin', 'admin@shoppingstore.local', N'Quản Trị Viên', '$2a$12$juRVHTCrkKdJXbECVLtNB.iIwgFsk8jpXkE9w6vgt74AJ2fTRO7OW', 1, '0900000001', CAST(GETDATE() AS DATE), 1);
+END;
+GO
+
+IF NOT EXISTS (SELECT 1 FROM dbo.[User] WHERE [username] = 'manager')
+BEGIN
+    INSERT INTO dbo.[User] ([username], [email], [fullname], [password], [roleid], [phone], [createdDate], [status])
+    VALUES ('manager', 'manager@shoppingstore.local', N'Điều Hành Viên', '$2a$12$juRVHTCrkKdJXbECVLtNB.iIwgFsk8jpXkE9w6vgt74AJ2fTRO7OW', 2, '0900000002', CAST(GETDATE() AS DATE), 1);
+END;
 GO
 
 
